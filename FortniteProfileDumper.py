@@ -20,6 +20,7 @@ profiles = [
 class links:
     getToken = "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token"
     profileRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/client/QueryProfile?profileId={1}"
+    getAuthCodeUrl = "https://www.epicgames.com/id/logout?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Flogin%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253Dec684b8c687f479fadea3cb2ad83f5c6%2526responseType%253Dcode"
 
 def getAccessToken(req):
     # Getting the token and using it to login into an account.
@@ -31,7 +32,7 @@ def getAccessToken(req):
         data={
             "grant_type": "authorization_code",
             "token_type": "eg1",
-            "code": input("Insert the auth code:\n")}).json()
+            "code": input(f"Insert the auth code below.\nYou can get it here:\n\n{links.getAuthCodeUrl}\n\n")}).json()
 
     if "errorMessage" in reqToken:
         print(f"\nERROR: {reqToken['errorMessage']}")
@@ -56,7 +57,7 @@ def Directories(displayName):
 
 def main():
     # Main func.
-    print("Fortnite Profile Dumper v1.0.2 by PRO100KatYT & TeaDoc\n")
+    print("Fortnite Profile Dumper v1.1.0 by PRO100KatYT & TeaDoc\n")
     req = requests.Session()
     access_token, account_id, displayName = getAccessToken(req)
     headers = {
