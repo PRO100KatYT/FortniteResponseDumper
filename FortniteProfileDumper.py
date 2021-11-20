@@ -75,7 +75,7 @@ def SendReq(req, path, account_id, profile, headers):
     # Sending our request
     data = req.post(links.profileRequest.format(account_id, profile), headers=headers, data="{}").json()['profileChanges'][0]['profile']
     with open(f"{path}/{profile}.json", "w+") as file:
-        file.write(json.dumps(data))
+        json.dump(data, file, indent=4)
     print(f"Dumped the \"{profile}\" profile to {os.path.join(path, f'{profile}.json')}.")
 
 if __name__ == "__main__":
