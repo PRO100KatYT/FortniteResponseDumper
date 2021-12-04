@@ -3,12 +3,20 @@
 This program allows you to dump your Fortnite account profiles.
 
 ---
+### Changelog:
+What's new in the 1.1.0 update:
+- The program is now able to automatically open webpages for the auth code.
+- Added another link to get the auth token if you're already logged in your browser.
+- Tweaked the program's code a little bit.
+---
 
 ### How to use it?
 
-- After starting the FortniteProfileDumper.py, you will be asked to insert the auth code. To get it, go to the Epic Games website [using this link](https://www.epicgames.com/id/logout?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Flogin%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253Dec684b8c687f479fadea3cb2ad83f5c6%2526responseType%253Dcode "Here is the link :D") and log in.
+- After starting the FortniteProfileDumper.py, you will be asked if you are logged into your Epic account in your browser. If yes, type 1, if no, type 2.
 
-- After logging in, a page should open with content similar to this:
+- After you'll press ENTER, an Epic Games website will open. From there, login if you are not already logged into your Epic account.
+
+- Then a page should open with content similar to this:
 
 ```json
 {"redirectUrl":"https://accounts.epicgames.com/fnauth?code=930884289b5852842271e9027376a527","authorizationCode":"930884289b5852842271e9027376a527","sid":null}
