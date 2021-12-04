@@ -1,4 +1,4 @@
-print("Fortnite Profile Dumper v1.1.0 by PRO100KatYT\n")
+print("Fortnite Profile Dumper v1.1.1 by PRO100KatYT\n")
 try:
     import json
     import requests
@@ -42,10 +42,10 @@ else:
 path = os.path.join(os.path.split(os.path.abspath(__file__))[0], f"Dumped Profiles\{displayName}\{datetime.today().strftime('%Y-%m-%d %H-%M-%S')}")
 if not os.path.exists(path): os.makedirs(path)
 headers = {"Authorization": f"bearer {access_token}", "Content-Type": "application/json"}
-profiles = ["athena", "campaign", "collection_book_people0", "collection_book_schematics0", "collections", "common_core", "common_public", "creative", "metadata", "outpost0", "theater0"]
+profiles = ["athena", "campaign", "collection_book_people0", "collection_book_schematics0", "collections", "common_core", "common_public", "creative", "metadata", "outpost0", "theater0", "theater1", "theater2"]
 profileCount = 0
 while True:
-    if profileCount > 10: break
+    if profileCount > 12: break
     else:
         reqGetProfile = requests.post(links.profileRequest.format(account_id, "QueryProfile", profiles[profileCount]), headers=headers, data="{}")
         reqGetProfileText = json.loads(reqGetProfile.text)
