@@ -192,7 +192,7 @@ for response in responsesList:
 if config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower() == "true":
     profilePath = os.path.join(os.path.split(os.path.abspath(__file__))[0], f"Dumped files\\{currentDate}\\{displayName}'s Profiles")
     if not os.path.exists(profilePath): os.makedirs(profilePath)
-    profiles = ["athena", "campaign", "collection_book_people0", "collection_book_schematics0", "collections", "common_core", "common_public", "creative", "metadata", "outpost0", "theater0", "theater1", "theater2"]
+    profiles = ["athena", "campaign", "collection_book_people0", "collection_book_schematics0", "collections", "common_core", "common_public", "creative", "metadata", "outpost0", "recycle_bin", "theater0", "theater1", "theater2"]
     print(f"Starting to dump {len(profiles)} {displayName}'s profiles")
     profileCount = 0
     while True:
