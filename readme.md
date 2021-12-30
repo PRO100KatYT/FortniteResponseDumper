@@ -4,11 +4,12 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.2.0 update:
-- Many more responses which program can dump: catalog, keychain, contentpages, timeline, theater, account & global cloudstorage.
-  - You can decide which of them the program will save and their language using the new config file.
-- Ported the login part of code from the Save The World Claimer, so an auth.json file will generate after using this program too.
-- Changed the program's name from FortniteProfileDumper to FortniteResponseDumper.
+What's new in the 1.2.1 update:
+- A new config option called "Save_Empty_Cloudstorage".
+  - From now on, the program will not dump empty Cloudstorage files by default.
+  - You can change it via this option in the config file.
+- Changed the file size info to show an additional tenth of the size.
+- Fixed an issue with files paths on mobile devices.
 - Tweaked the program's code a little bit.
 ---
 
