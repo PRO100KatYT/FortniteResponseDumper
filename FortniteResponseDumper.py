@@ -1,4 +1,5 @@
-version = "1.2.1"
+version = "1.2.2"
+configVersion = "1.2.1"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
     import json
@@ -27,7 +28,7 @@ configPath = os.path.join(os.path.split(os.path.abspath(__file__))[0], "config.i
 if not os.path.exists(configPath):
     print("Starting to generate the config.ini file.\n")
     configFile = open(configPath, "a")
-    configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use? Valid vaules: token, device.\n# Token auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nAuthorization_Type = token\n\n# What language do you want some of the saved responses to be? Valid vaules: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr.\nLanguage = en\n\n# Do you want the program to dump the Catalog (Item Shop)? Valid vaules: true, false.\nDump_Catalog = true\n\n# Do you want the program to dump the Keychain? Valid vaules: true, false.\nDump_Keychain = true\n\n# Do you want the program to dump the Contentpages (News)? Valid vaules: true, false.\nDump_Contentpages = true\n\n# Do you want the program to dump the Timeline? Valid vaules: true, false.\nDump_Timeline = true\n\n# Do you want the program to dump the Theater (StW World)? Valid vaules: true, false.\nDump_Theater = true\n\n# Do you want the program to dump the account profiles? Valid vaules: true, false.\nDump_Profiles = true\n\n# Do you want the program to dump the account Cloudstorage? Valid vaules: true, false.\nDump_Account_Cloudstorage = true\n\n# Do you want the program to dump the global Cloudstorage? Valid vaules: true, false.\nDump_Global_Cloudstorage = true\n\n# Do you want the program to save Cloudstorage files that are empty? Valid vaules: true, false.\nSave_Empty_Cloudstorage = false\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{version}")
+    configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use? Valid vaules: token, device.\n# Token auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nAuthorization_Type = token\n\n# What language do you want some of the saved responses to be? Valid vaules: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr.\nLanguage = en\n\n# Do you want the program to dump the Catalog (Item Shop)? Valid vaules: true, false.\nDump_Catalog = true\n\n# Do you want the program to dump the Keychain? Valid vaules: true, false.\nDump_Keychain = true\n\n# Do you want the program to dump the Contentpages (News)? Valid vaules: true, false.\nDump_Contentpages = true\n\n# Do you want the program to dump the Timeline? Valid vaules: true, false.\nDump_Timeline = true\n\n# Do you want the program to dump the Theater (StW World)? Valid vaules: true, false.\nDump_Theater = true\n\n# Do you want the program to dump the account profiles? Valid vaules: true, false.\nDump_Profiles = true\n\n# Do you want the program to dump the account Cloudstorage? Valid vaules: true, false.\nDump_Account_Cloudstorage = true\n\n# Do you want the program to dump the global Cloudstorage? Valid vaules: true, false.\nDump_Global_Cloudstorage = true\n\n# Do you want the program to save Cloudstorage files that are empty? Valid vaules: true, false.\nSave_Empty_Cloudstorage = false\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
     configFile.close()
     print("The config.ini file was generated successfully.\n")
 boolOptions = ["Dump_Catalog", "Dump_Keychain", "Dump_Contentpages", "Dump_Timeline", "Dump_Theater", "Dump_Profiles", "Dump_Account_Cloudstorage", "Dump_Global_Cloudstorage", "Save_Empty_Cloudstorage"]
@@ -41,7 +42,7 @@ try:
 except:
     input("ERROR: The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
     exit()
-if not (configVer == f"FRD_{version}"):
+if not (configVer == f"FRD_{configVersion}"):
     input("ERROR: The config file is outdated. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
     exit()
 if not (lang in ("de", "ru", "ko", "en", "it", "fr", "es", "ar", "ja", "pl", "es-419", "tr")):
@@ -84,11 +85,8 @@ if not os.path.exists(authPath):
             refreshToken = reqTokenText["refresh_token"]
             accountId = reqTokenText["account_id"]
             expirationDate = reqTokenText["refresh_expires_at"]
-            jsontosave = ("{\"WARNING\": \"Don't show anyone the contents of this file, because it contains information with which the program logs into the account.\", \"authType\":\"token\", \"refreshToken\":\"{refresh_token}\", \"accountId\":\"{account_id}\", \"refresh_expires_at\":\"{refresh_expires_at}\"}")
-            firstjsonreplace = jsontosave.replace("{refresh_token}", refreshToken)
-            secondjsonreplace = firstjsonreplace.replace("{account_id}", accountId)
-            thirdjsonreplace = secondjsonreplace.replace("{refresh_expires_at}", expirationDate)
-            json.dump(json.loads(thirdjsonreplace), open(authPath, "w"), indent = 2)
+            jsontosave = {"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "token", "refreshToken": refreshToken, "accountId": accountId, "refresh_expires_at": expirationDate}
+            json.dump(jsontosave, open(authPath, "w"), indent = 2)
     if authType == "device":
         loginLink = loginLink.format("3446cd72694c4a4485d81b77adbb2141")
         webbrowser.open_new_tab(loginLink)
@@ -109,11 +107,8 @@ if not os.path.exists(authPath):
         else:
             deviceId = reqDeviceAuthText["deviceId"]
             secret = reqDeviceAuthText["secret"]
-            jsontosave = ("{\"WARNING\": \"Don't show anyone the contents of this file, because it contains information with which the program logs into the account.\", \"authType\":\"device\",  \"deviceId\":\"{deviceId}\", \"accountId\":\"{account_id}\", \"secret\":\"{secret}\"}")
-            firstjsonreplace = jsontosave.replace("{deviceId}", deviceId)
-            secondjsonreplace = firstjsonreplace.replace("{account_id}", accountId)
-            thirdjsonreplace = secondjsonreplace.replace("{secret}", secret)
-            json.dump(json.loads(thirdjsonreplace), open(authPath, "w"), indent = 2)
+            jsontosave = {"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "device",  "deviceId": deviceId, "accountId": accountId, "secret": secret}
+            json.dump(jsontosave, open(authPath, "w"), indent = 2)
     print("\nThe auth.json file was generated successfully.\n")
 try:
     getAuthJson = json.loads(open(authPath, "r").read())
@@ -234,16 +229,18 @@ if config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(
         fileName = cloudstorageNameList[cloudstorageCount]
         reqGetCloudstorageFile = requests.get(links.cloudstorageRequest.format(f"user/{accountId}/{fileID}"), headers=headers, data="")
         reqGetCloudstorageFileText = reqGetCloudstorageFile.text
-        cloudstorageCount += 1
         if "errorMessage" in reqGetCloudstorageFileText:
             input(f"\nERROR: {reqGetCloudstorageFileText['errorMessage']}\n\nPress ENTER to close the program.\n") 
             exit()
-        if (config['Fortnite_Response_Dumper_Config']["Save_Empty_Cloudstorage"].lower() == "false") and (not reqGetCloudstorageFileText): print(f"{cloudstorageCount}: Skipping {fileName} because it's empty.")
+        if (config['Fortnite_Response_Dumper_Config']["Save_Empty_Cloudstorage"].lower() == "false") and (not reqGetCloudstorageFileText):
+            cloudstorageCount += 1
+            print(f"{cloudstorageCount}: Skipping {fileName} because it's empty.")
         else:
             cloudstorageFilePath = os.path.join(userCSPath, f"{fileName}")
             cloudstorageFile = open(cloudstorageFilePath, "w", encoding = "utf-8")
             cloudstorageFile.write(reqGetCloudstorageFileText)
             cloudstorageFile.close()
+            cloudstorageCount += 1
             fileSize = round(os.path.getsize(cloudstorageFilePath)/1024, 1)
             if str(fileSize).endswith(".0"): fileSize = round(fileSize)
             print(f"{cloudstorageCount}: Dumped {fileName} ({fileSize} KB)")
@@ -268,16 +265,18 @@ if config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower()
         fileName = cloudstorageNameList[cloudstorageCount]
         reqGetCloudstorageFile = requests.get(links.cloudstorageRequest.format(f"system/{cloudstorageIDList[cloudstorageCount]}"), headers=headers, data="")
         reqGetCloudstorageFileText = reqGetCloudstorageFile.text
-        cloudstorageCount += 1
         if "errorMessage" in reqGetCloudstorageFileText:
             input(f"\nERROR: {reqGetCloudstorageFileText['errorMessage']}\n\nPress ENTER to close the program.\n") 
             exit()
-        if (config['Fortnite_Response_Dumper_Config']["Save_Empty_Cloudstorage"].lower() == "false") and (not reqGetCloudstorageFileText): print(f"{cloudstorageCount}: Skipping {fileName} because it's empty.")
+        if (config['Fortnite_Response_Dumper_Config']["Save_Empty_Cloudstorage"].lower() == "false") and (not reqGetCloudstorageFileText):
+            cloudstorageCount += 1
+            print(f"{cloudstorageCount}: Skipping {fileName} because it's empty.")
         else:
             cloudstorageFilePath = os.path.join(globalCSPath, f"{cloudstorageNameList[cloudstorageCount]}")
             cloudstorageFile = open(cloudstorageFilePath, "w", encoding = "utf-8")
             cloudstorageFile.write(reqGetCloudstorageFileText)
             cloudstorageFile.close()
+            cloudstorageCount += 1
             fileSize = round(os.path.getsize(cloudstorageFilePath)/1024, 1)
             if str(fileSize).endswith(".0"): fileSize = round(fileSize)
             print(f"{cloudstorageCount}: Dumped {fileName} ({fileSize} KB)")
