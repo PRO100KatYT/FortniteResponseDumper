@@ -1,4 +1,4 @@
-version = "1.2.2"
+version = "1.3.0"
 configVersion = "1.2.1"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
@@ -18,268 +18,207 @@ class links:
     loginLink2 = "https://www.epicgames.com/id/logout?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Flogin%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D{0}%2526responseType%253Dcode"
     getOAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/{0}"
     getDeviceAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/deviceAuth"
-    singleResponses = json.loads("{\"catalog\":[\"https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/catalog\",\"{}\"],\"keychain\":[\"https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain\",\"{}\"],\"contentpages\":[\"https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game\",\"\"],\"timeline\":[\"https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/calendar/v1/timeline\",\"{}\"],\"theater\":[\"https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/world/info\",\"{}\"]}")
+    singleResponses = {"Dump_Catalog": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/catalog", "{}", "Catalog (Item Shop)", "catalog"], "Dump_Keychain": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], "Dump_Contentpages": ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages (News)", "contentpages"], "Dump_Timeline": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], "Dump_Theater": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]}
     profileRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/client/QueryProfile?profileId={1}"
     cloudstorageRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/cloudstorage/{0}"
 
-# Creating and/or reading the config.ini file.
-config = ConfigParser()
-configPath = os.path.join(os.path.split(os.path.abspath(__file__))[0], "config.ini")
-if not os.path.exists(configPath):
-    print("Starting to generate the config.ini file.\n")
-    configFile = open(configPath, "a")
-    configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use? Valid vaules: token, device.\n# Token auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nAuthorization_Type = token\n\n# What language do you want some of the saved responses to be? Valid vaules: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr.\nLanguage = en\n\n# Do you want the program to dump the Catalog (Item Shop)? Valid vaules: true, false.\nDump_Catalog = true\n\n# Do you want the program to dump the Keychain? Valid vaules: true, false.\nDump_Keychain = true\n\n# Do you want the program to dump the Contentpages (News)? Valid vaules: true, false.\nDump_Contentpages = true\n\n# Do you want the program to dump the Timeline? Valid vaules: true, false.\nDump_Timeline = true\n\n# Do you want the program to dump the Theater (StW World)? Valid vaules: true, false.\nDump_Theater = true\n\n# Do you want the program to dump the account profiles? Valid vaules: true, false.\nDump_Profiles = true\n\n# Do you want the program to dump the account Cloudstorage? Valid vaules: true, false.\nDump_Account_Cloudstorage = true\n\n# Do you want the program to dump the global Cloudstorage? Valid vaules: true, false.\nDump_Global_Cloudstorage = true\n\n# Do you want the program to save Cloudstorage files that are empty? Valid vaules: true, false.\nSave_Empty_Cloudstorage = false\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
-    configFile.close()
-    print("The config.ini file was generated successfully.\n")
-boolOptions = ["Dump_Catalog", "Dump_Keychain", "Dump_Contentpages", "Dump_Timeline", "Dump_Theater", "Dump_Profiles", "Dump_Account_Cloudstorage", "Dump_Global_Cloudstorage", "Save_Empty_Cloudstorage"]
-try:
-    getConfigIni = config.read(configPath)
-    authType = config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower()
-    configVer = config['Config_Version']['Version']
-    lang = config['Fortnite_Response_Dumper_Config']["Language"].lower()
-    for key in boolOptions:
-        config['Fortnite_Response_Dumper_Config'][f'{key}']
-except:
-    input("ERROR: The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
-    exit()
-if not (configVer == f"FRD_{configVersion}"):
-    input("ERROR: The config file is outdated. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
-    exit()
-if not (lang in ("de", "ru", "ko", "en", "it", "fr", "es", "ar", "ja", "pl", "es-419", "tr")):
-    input(f"ERROR: You set the wrong Language value in config.ini ({lang}). Valid values: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
-    exit()
-responsesList = []
-trueValues = 0
-for key in boolOptions:
-    keyValue = config['Fortnite_Response_Dumper_Config'][f'{key}'].lower()
-    if not (keyValue in ("true", "false")):
-        input(f"ERROR: You set the wrong {key} value in config.ini ({keyValue}). Valid values: true, false. Change it and run this program again.\n\nPress ENTER to close the program.\n")
-        exit()
-    if keyValue == "true":
-        trueValues += 1
-        if key in boolOptions[:5]: responsesList.append((key.split("Dump_")[1]).lower())
-if not (authType in ("token", "device")):
-    input(f"ERROR: You set the wrong \"Authorization_Type\" value in config.ini ({authType}). Valid values: token, device. Change it and run this program again.\n\nPress ENTER to close the program.\n")
+# Start a new requests session.
+session = requests.Session()
+
+# Error with a custom message.
+def customError(text):
+    input(f"ERROR: {text}\n\nPress ENTER to close the program.\n")
     exit()
 
-# Creating and/or reading the auth.json file.
+# Error for invalid config values.
+def configError(key, value, validValues): customError(f"You set the wrong {key} value in config.ini ({value}). Valid values: {validValues}. Please change it and run this program again.")
+
+# Loop input until the response is one of the correct values.
+def validInput(text, values):
+    response = input(f"{text}\n")
+    print()
+    while True:
+        if response in values: break
+        response = input("You priovided a wrong value. Please input it again.\n")
+        print()
+    return response
+
+# Get the text from a request and check for errors.
+def requestText(request, bJson):
+    if bJson: requestText = json.loads(request.text)
+    else: requestText = request.text
+    if "errorMessage" in requestText: customError(requestText['errorMessage'])
+    return requestText
+
+# Send token request.
+def reqToken(loginLink):
+    webbrowser.open_new_tab(loginLink)
+    print(f"If the program didnt open it, copy this link to your browser: {(loginLink)}\n")
+    reqTokenText = requestText(session.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y="}, data={"grant_type": "authorization_code", "code": input("Insert the auth code:\n")}), True)
+    return reqTokenText
+
+# Round the file size.
+def roundSize(filePathToSave):
+    fileSize = round(os.path.getsize(filePathToSave)/1024, 1)
+    if str(fileSize).endswith(".0"): fileSize = round(fileSize)
+    return fileSize
+
+# Create and/or read the config.ini file.
+config, configPath = [ConfigParser(), os.path.join(os.path.split(os.path.abspath(__file__))[0], "config.ini")]
+langValues, boolValues = [["de", "ru", "ko", "en", "it", "fr", "es", "ar", "ja", "pl", "es-419", "tr"], ["true", "false"]]
+if not os.path.exists(configPath):
+    print("Starting to generate the config.ini file.\n")
+    bStartSetup = validInput("Type 1 if you want to start the config setup and press ENTER.\nType 2 if you want to use the default config values and press ENTER.", ["1", "2"])
+    if bStartSetup == "1":
+        iAuthorization_Type = validInput("Which authentication method do you want the program to use?\nToken auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\nDevice auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nValid vaules: token, device.", ["token", "device"])
+        iLanguage = validInput(f"What language do you want some of the saved responses to be?\nValid vaules: {', '.join(langValues)}", langValues)
+        iList = []
+        dumpOptionsJson = {"Dump_Catalog": "Catalog (Item Shop)", "Dump_Keychain": "Keychain", "Dump_Contentpages": "Contentpages (News)", "Dump_Timeline": "Timeline", "Dump_Theater": "Theater (StW World)", "Dump_Profiles": "Account Profiles", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage"}
+        for option in dumpOptionsJson: iList.append(validInput(f"Do you want the program to dump the {dumpOptionsJson[option]}?\nValid vaules: {', '.join(boolValues)}.", boolValues))
+        iDump_Catalog, iDump_Keychain, iDump_Contentpages, iDump_Timeline, iDump_Theater, iDump_Profiles, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage = iList
+        iSave_Empty_Cloudstorage = validInput(f"Do you want the program to save Global Cloudstorage files that are empty?\nValid vaules: {', '.join(boolValues)}.", boolValues)
+    else: iAuthorization_Type, iLanguage, iDump_Catalog, iDump_Keychain, iDump_Contentpages, iDump_Timeline, iDump_Theater, iDump_Profiles, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage = ["token", "en", "true", "true", "true", "true", "true", "true", "true", "true", "false"]
+    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\n# Valid vaules: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid vaules: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr.\nLanguage = {iLanguage}\n\n# Do you want the program to dump the Catalog (Item Shop)?\n# Valid vaules: true, false.\nDump_Catalog = {iDump_Catalog}\n\n# Do you want the program to dump the Keychain?\n# Valid vaules: true, false.\nDump_Keychain = {iDump_Keychain}\n\n# Do you want the program to dump the Contentpages (News)?\n# Valid vaules: true, false.\nDump_Contentpages = {iDump_Contentpages}\n\n# Do you want the program to dump the Timeline?\n# Valid vaules: true, false.\nDump_Timeline = {iDump_Timeline}\n\n# Do you want the program to dump the Theater (StW World)?\n# Valid vaules: true, false.\nDump_Theater = {iDump_Theater}\n\n# Do you want the program to dump the account profiles?\n# Valid vaules: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid vaules: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid vaules: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid vaules: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
+    print("The config.ini file was generated successfully.\n")
+try:
+    config.read(configPath)
+    configVer, authType, lang, bDumpCatalog, bDumpKeychain, bDumpContentpages, bDumpTimeline, bDumpTheater, bDumpProfiles, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Catalog'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Keychain'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Contentpages'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Timeline'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Theater'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower()]
+except:
+    customError("The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
+checkValuesJson, trueValues = [{"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Dump_Catalog": {"value": bDumpCatalog, "validValues": boolValues}, "Dump_Keychain": {"value": bDumpKeychain, "validValues": boolValues}, "Dump_Contentpages": {"value": bDumpContentpages, "validValues": boolValues}, "Dump_Timeline": {"value": bDumpTimeline, "validValues": boolValues}, "Dump_Theater": {"value": bDumpTheater, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}}, 0]
+for option in checkValuesJson:
+    if not (checkValuesJson[option]['value'] in checkValuesJson[option]['validValues']): customError(f"You set the wrong {option} value in config.ini ({checkValuesJson[option]['value']}). Valid values: {', '.join(checkValuesJson[option]['validValues'])}. Please change it and run this program again.")
+    elif checkValuesJson[option]['value'] == "false": links.singleResponses.pop(option, None)
+    else: trueValues += 1
+if not (configVer == f"FRD_{configVersion}"): customError("The config file is outdated. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
+
+# Create and/or read the auth.json file.
 authPath = os.path.join(os.path.split(os.path.abspath(__file__))[0], "auth.json")
 if not os.path.exists(authPath):
-    isLoggedIn = input("Starting to generate the auth.json file.\n\nAre you logged into your Epic account that you would like the program to use in your browser?\nType 1 if yes and press ENTER.\nType 2 if no and press ENTER.\n")
-    while True:
-        if (isLoggedIn == "1" or isLoggedIn == "2"): break
-        else: isLoggedIn = input("\nYou priovided a wrong value. Please input it again.\n")
-    input("\nThe program is going to open an Epic Games webpage.\nTo continue, press ENTER.\n")
+    isLoggedIn = validInput("Starting to generate the auth.json file.\n\nAre you logged into your Epic account that you would like the program to use in your browser?\nType 1 if yes and press ENTER.\nType 2 if no and press ENTER.\n", ["1", "2"])
+    input("The program is going to open an Epic Games webpage.\nTo continue, press ENTER.\n")
     if isLoggedIn == "1": loginLink = links.loginLink1
     else: loginLink = links.loginLink2
     if authType == "token":
-        loginLink = loginLink.format("34a02cf8f4414e29b15921876da36f9a")
-        webbrowser.open_new_tab(loginLink)
-        print(f"If the program didnt open it, copy this link to your browser: {(loginLink)}\n")
-        reqToken = requests.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y="}, data={"grant_type": "authorization_code", "code": input("Insert the auth code:\n")})
-        reqTokenText = json.loads(reqToken.text)
-        if "errorMessage" in reqTokenText:
-            input(f"\nERROR: {reqTokenText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-            exit()
-        else:
-            refreshToken = reqTokenText["refresh_token"]
-            accountId = reqTokenText["account_id"]
-            expirationDate = reqTokenText["refresh_expires_at"]
-            jsontosave = {"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "token", "refreshToken": refreshToken, "accountId": accountId, "refresh_expires_at": expirationDate}
-            json.dump(jsontosave, open(authPath, "w"), indent = 2)
-    if authType == "device":
-        loginLink = loginLink.format("3446cd72694c4a4485d81b77adbb2141")
-        webbrowser.open_new_tab(loginLink)
-        print(f"If the program didnt open it, copy this link to your browser: {loginLink}\n")
-        reqToken = requests.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE="}, data={"grant_type": "authorization_code", "code": input("Insert the auth code:\n")})
-        reqTokenText = json.loads(reqToken.text)
-        if "errorMessage" in reqTokenText:
-            input(f"\nERROR: {reqTokenText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-            exit()
-        else:
-            accessToken = reqTokenText["access_token"]
-            accountId = reqTokenText["account_id"]
-        reqDeviceAuth = requests.post(links.getDeviceAuth.format(accountId), headers={"Authorization": f"bearer {accessToken}"}, data={})
-        reqDeviceAuthText = json.loads(reqDeviceAuth.text)
-        if "errorMessage" in reqDeviceAuthText:
-            input(f"\nERROR: {reqDeviceAuthText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-            exit()
-        else:
-            deviceId = reqDeviceAuthText["deviceId"]
-            secret = reqDeviceAuthText["secret"]
-            jsontosave = {"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "device",  "deviceId": deviceId, "accountId": accountId, "secret": secret}
-            json.dump(jsontosave, open(authPath, "w"), indent = 2)
+        reqTokenText = reqToken(loginLink.format("34a02cf8f4414e29b15921876da36f9a"))
+        refreshToken, accountId, expirationDate = [reqTokenText["refresh_token"], reqTokenText["account_id"], reqTokenText["refresh_expires_at"]]
+        json.dump({"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "token", "refreshToken": refreshToken, "accountId": accountId, "refresh_expires_at": expirationDate}, open(authPath, "w"), indent = 2)
+    else:
+        reqTokenText = reqToken(loginLink.format("3446cd72694c4a4485d81b77adbb2141"))
+        accessToken, accountId = [reqTokenText["access_token"], reqTokenText["account_id"]]
+        reqDeviceAuthText = requestText(session.post(links.getDeviceAuth.format(accountId), headers={"Authorization": f"bearer {accessToken}"}, data={}), True)
+        deviceId, secret = [reqDeviceAuthText["deviceId"], reqDeviceAuthText["secret"]]
+        json.dump({"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "device",  "deviceId": deviceId, "accountId": accountId, "secret": secret}, open(authPath, "w"), indent = 2)
     print("\nThe auth.json file was generated successfully.\n")
 try:
     getAuthJson = json.loads(open(authPath, "r").read())
     if authType == "token":
-        if getAuthJson["authType"] == "device":
-            input("The authorization type in config is set to token, but the auth.json file contains device auth credentials.\nDelete the auth.json file and run this program again to generate a token one or change authorization type back to device in config.ini.\n\nPress ENTER to close the program.\n")
-            exit = 1
-        expirationDate = getAuthJson["refresh_expires_at"]
-        if expirationDate < datetime.now().isoformat():
-            input("The refresh token has expired. Delete the auth.json file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
-            exit = 1
-        refreshToken = getAuthJson["refreshToken"]
+        expirationDate, refreshToken = [getAuthJson["refresh_expires_at"], getAuthJson["refreshToken"]]
+        if getAuthJson["authType"] == "device": customError("The authorization type in config is set to token, but the auth.json file contains device auth credentials.\nDelete the auth.json file and run this program again to generate a token one or change authorization type back to device in config.ini.")
+        if expirationDate < datetime.now().isoformat(): customError("The refresh token has expired. Delete the auth.json file and run this program again to generate a new one.")
     if authType == "device":
-        if getAuthJson["authType"] == "token":
-            input("The authorization type in config is set to device, but the auth.json file contains token auth credentials.\nDelete the auth.json file and run this program again to generate a device one or change authorization type back to token in config.ini.\n\nPress ENTER to close the program.\n")
-            exit = 1
-        deviceId = getAuthJson["deviceId"]
-        secret = getAuthJson["secret"]
+        deviceId, secret = [getAuthJson["deviceId"], getAuthJson["secret"]]
+        if getAuthJson["authType"] == "token": customError("The authorization type in config is set to device, but the auth.json file contains token auth credentials.\nDelete the auth.json file and run this program again to generate a device one or change authorization type back to token in config.ini.")
     accountId = getAuthJson["accountId"]
 except:
-    if exit == 1: exit()
-    input("ERROR: The program is unable to read the auth.json file. Delete the auth.json file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
-    exit()
-if exit == 1: exit()
+    customError("The program is unable to read the auth.json file. Delete the auth.json file and run this program again to generate a new one.")
 
-# Logging in.
+# Log in.
 if authType == "token":
-    reqRefreshToken = requests.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y="}, data={"grant_type": "refresh_token", "refresh_token": refreshToken})
-    reqRefreshTokenText = json.loads(reqRefreshToken.text)
-    if "errorMessage" in reqRefreshTokenText:
-        input(f"ERROR: At least one variable in the auth.json file is no longer valid. Delete the auth.json file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n") 
-        exit()
-    getAuthFile = open(authPath, "r").read()
-    authReplaceToken = getAuthFile.replace(refreshToken, reqRefreshTokenText["refresh_token"])
-    authReplaceDate = authReplaceToken.replace(expirationDate, reqRefreshTokenText["refresh_expires_at"])
-    authFile = open(authPath, "w")
-    authFile.write(authReplaceDate)
-    authFile.close()
-    accessToken = reqRefreshTokenText["access_token"]
-    reqExchange = requests.get(links.getOAuth.format("exchange"), headers={"Authorization": f"bearer {accessToken}"}, data={"grant_type": "authorization_code"})
-    reqExchangeText = json.loads(reqExchange.text)
-    exchangeCode = reqExchangeText["code"]
-    reqToken = requests.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE="}, data={"grant_type": "exchange_code", "exchange_code": exchangeCode, "token_type": "eg1"})
-if authType == "device":
-    reqToken = requests.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE="}, data={"grant_type": "device_auth", "device_id": deviceId, "account_id": accountId, "secret": secret, "token_type": "eg1"})
-reqTokenText = json.loads(reqToken.text)
-if "errorMessage" in reqTokenText:
-    input(f"ERROR: At least one variable in the auth.json file is no longer valid. Delete the auth.json file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n") 
-    exit()
-accessToken = reqTokenText['access_token']
-displayName = reqTokenText['displayName']
+    reqRefreshTokenText = requestText(session.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y="}, data={"grant_type": "refresh_token", "refresh_token": refreshToken}), True)
+    with open(authPath, "r") as getAuthFile: authFile = json.loads(getAuthFile.read())
+    authFile['refreshToken'], authFile['refresh_expires_at'] = [reqRefreshTokenText["refresh_token"], reqRefreshTokenText["refresh_expires_at"]]
+    with open(authPath, "w") as getAuthFile: json.dump(authFile, getAuthFile, indent = 2)
+    reqExchangeText = requestText(session.get(links.getOAuth.format("exchange"), headers={"Authorization": f"bearer {reqRefreshTokenText['access_token']}"}, data={"grant_type": "authorization_code"}), True)
+    reqTokenText = requestText(session.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE="}, data={"grant_type": "exchange_code", "exchange_code": reqExchangeText["code"], "token_type": "eg1"}), True)
+if authType == "device": reqTokenText = requestText(session.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE="}, data={"grant_type": "device_auth", "device_id": deviceId, "account_id": accountId, "secret": secret, "token_type": "eg1"}), True)
+accessToken, displayName = [reqTokenText['access_token'], reqTokenText['displayName']]
 print(f"Logged in as {displayName}.\n")
 
-if trueValues == 0: print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
+if bDumpCatalog == bDumpKeychain == bDumpContentpages == bDumpTimeline == bDumpTheater == bDumpProfiles == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 headers = {"Authorization": f"bearer {accessToken}", "Content-Type": "application/json", "X-EpicGames-Language": lang, "Accept-Language": lang}
-currentDate = datetime.today().strftime('%Y-%m-%d %H-%M-%S')
 
+currentDate = datetime.today().strftime('%Y-%m-%d %H-%M-%S')
 path = os.path.join(os.path.split(os.path.abspath(__file__))[0], "Dumped files")
 path = os.path.join(path, f"{currentDate}")
 if not os.path.exists(path): os.makedirs(path)
 
-# Getting and dumping single responses.
+# Get and dump single responses.
 responseCount = 0
-for response in responsesList:
-    if responseCount >= len(responsesList): break
-    print(f"Starting to dump the {response.capitalize()}")
-    reqGetResponse = requests.get(links.singleResponses[response][0], headers=headers, data=links.singleResponses[response][1])
-    reqGetResponseText = json.loads(reqGetResponse.text)
-    if "errorMessage" in reqGetResponseText:
-        input(f"\nERROR: {reqGetResponseText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-        exit()
-    filePathToSave = os.path.join(path, f"{response}.json")
-    json.dump(reqGetResponseText, open(filePathToSave, "w", encoding = "utf-8"), indent = 2, ensure_ascii = False)
-    fileSize = round(os.path.getsize(filePathToSave)/1024, 1)
-    if str(fileSize).endswith(".0"): fileSize = round(fileSize)
-    print(f"Dumped the {response.capitalize()} ({fileSize} KB) to {filePathToSave}.\n")
+for response in links.singleResponses:
+    repsonse = links.singleResponses[response]
+    reqGetResponseText = requestText(session.get(links.singleResponses[response][0], headers=headers, data=links.singleResponses[response][1]), True)
+    filePathToSave = os.path.join(path, f"{links.singleResponses[response][3]}.json")
+    with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetResponseText, fileToSave, indent = 2, ensure_ascii = False)
+    fileSize = roundSize(filePathToSave)
+    print(f"Dumped the {links.singleResponses[response][2]} ({fileSize} KB) to {filePathToSave}.\n")
     responseCount += 1
 
-# Getting and dumping the profiles.
-if config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower() == "true":
+# Get and dump the profiles.
+if bDumpProfiles == "true":
     profilePath = os.path.join(path, f"{displayName}'s Profiles")
     if not os.path.exists(profilePath): os.makedirs(profilePath)
     profiles = ["athena", "campaign", "collection_book_people0", "collection_book_schematics0", "collections", "common_core", "common_public", "creative", "metadata", "outpost0", "recycle_bin", "theater0", "theater1", "theater2"]
     print(f"Starting to dump {len(profiles)} {displayName}'s profiles")
     profileCount = 0
-    while True:
-        if profileCount >= len(profiles): break
-        profileId = profiles[profileCount]
-        reqGetProfile = requests.post(links.profileRequest.format(accountId, profileId), headers=headers, data="{}")
-        reqGetProfileText = json.loads(reqGetProfile.text)
-        if "errorMessage" in reqGetProfileText:
-            input(f"\nERROR: {reqGetProfileText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-            exit()
+    for profileId in profiles:
+        reqGetProfileText = requestText(session.post(links.profileRequest.format(accountId, profileId), headers=headers, data="{}"), True)
         profileFilePath = os.path.join(profilePath, f"{profileId}.json")
-        json.dump(reqGetProfileText['profileChanges'][0]['profile'], open(profileFilePath, "w"), indent = 2)
-        fileSize = round(os.path.getsize(profileFilePath)/1024, 1)
-        if str(fileSize).endswith(".0"): fileSize = round(fileSize)
+        with open(profileFilePath, "w") as fileToSave: json.dump(reqGetProfileText['profileChanges'][0]['profile'], fileToSave, indent = 2)
+        fileSize = roundSize(profileFilePath)
         profileCount += 1
         print(f"{profileCount}: Dumped the {profileId} profile ({fileSize} KB)")
     print(f"\n{displayName}'s profiles have been successfully saved in {profilePath}.\n")
 
-# Getting and dumping the account Cloudstorage.
-if config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower() == "true":
+# Get and dump the account Cloudstorage.
+if bDumpAccountCloudstorage == "true":
     userCSPath = os.path.join(path, f"{displayName}'s Cloudstorage")
     if not os.path.exists(userCSPath): os.makedirs(userCSPath)
-    reqGetCloudstorage = requests.get(links.cloudstorageRequest.format(f"user/{accountId}"), headers=headers, data="{}")
-    reqGetCloudstorageText = json.loads(reqGetCloudstorage.text)
-    cloudstorageIDList = []
-    cloudstorageNameList = []
+    reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format(f"user/{accountId}"), headers=headers, data="{}"), True)
+    cloudstorageIDList,  cloudstorageNameList, cloudstorageCount = [[], [], 0]
     for key in reqGetCloudstorageText:
         cloudstorageIDList.append(key['uniqueFilename'])
         cloudstorageNameList.append(key['filename'])
     print(f"Starting to dump {len(cloudstorageIDList)} {displayName}'s Cloudstorage files")
-    cloudstorageCount = 0
     while True:
         if cloudstorageCount >= len(cloudstorageIDList): break
-        fileID = cloudstorageIDList[cloudstorageCount]
-        fileName = cloudstorageNameList[cloudstorageCount]
-        reqGetCloudstorageFile = requests.get(links.cloudstorageRequest.format(f"user/{accountId}/{fileID}"), headers=headers, data="")
-        reqGetCloudstorageFileText = reqGetCloudstorageFile.text
-        if "errorMessage" in reqGetCloudstorageFileText:
-            input(f"\nERROR: {reqGetCloudstorageFileText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-            exit()
-        if (config['Fortnite_Response_Dumper_Config']["Save_Empty_Cloudstorage"].lower() == "false") and (not reqGetCloudstorageFileText):
+        fileID, fileName = [cloudstorageIDList[cloudstorageCount], cloudstorageNameList[cloudstorageCount]]
+        reqGetCloudstorageFileText = requestText(session.get(links.cloudstorageRequest.format(f"user/{accountId}/{fileID}"), headers=headers, data=""), False)
+        if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText):
             cloudstorageCount += 1
             print(f"{cloudstorageCount}: Skipping {fileName} because it's empty.")
         else:
             cloudstorageFilePath = os.path.join(userCSPath, f"{fileName}")
-            cloudstorageFile = open(cloudstorageFilePath, "w", encoding = "utf-8")
-            cloudstorageFile.write(reqGetCloudstorageFileText)
-            cloudstorageFile.close()
+            with open(cloudstorageFilePath, "w", encoding = "utf-8") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
             cloudstorageCount += 1
-            fileSize = round(os.path.getsize(cloudstorageFilePath)/1024, 1)
-            if str(fileSize).endswith(".0"): fileSize = round(fileSize)
+            fileSize = roundSize(cloudstorageFilePath)
             print(f"{cloudstorageCount}: Dumped {fileName} ({fileSize} KB)")
     print(f"\n{displayName}'s Cloudstorage files have been successfully saved in {userCSPath}.\n")
 
-# Getting and dumping the global Cloudstorage.
-if config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower() == "true":
-    globalCSPath = os.path.join(path, f"Global Cloudstorage")
+# Get and dump the global Cloudstorage.
+if bDumpGlobalCloudstorage == "true":
+    globalCSPath = os.path.join(path, "Global Cloudstorage")
     if not os.path.exists(globalCSPath): os.makedirs(globalCSPath)
-    reqGetCloudstorage = requests.get(links.cloudstorageRequest.format("system"), headers=headers, data="{}")
-    reqGetCloudstorageText = json.loads(reqGetCloudstorage.text)
-    cloudstorageIDList = []
-    cloudstorageNameList = []
+    reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format("system"), headers=headers, data="{}"), True)
+    cloudstorageIDList, cloudstorageNameList, cloudstorageCount = [[], [], 0]
     for key in reqGetCloudstorageText:
         cloudstorageIDList.append(key['uniqueFilename'])
         cloudstorageNameList.append(key['filename'])
     print(f"Starting to dump {len(cloudstorageIDList)} global Cloudstorage files")
-    cloudstorageCount = 0
     while True:
         if cloudstorageCount >= len(cloudstorageIDList): break
-        fileID = cloudstorageIDList[cloudstorageCount]
-        fileName = cloudstorageNameList[cloudstorageCount]
-        reqGetCloudstorageFile = requests.get(links.cloudstorageRequest.format(f"system/{cloudstorageIDList[cloudstorageCount]}"), headers=headers, data="")
-        reqGetCloudstorageFileText = reqGetCloudstorageFile.text
-        if "errorMessage" in reqGetCloudstorageFileText:
-            input(f"\nERROR: {reqGetCloudstorageFileText['errorMessage']}\n\nPress ENTER to close the program.\n") 
-            exit()
-        if (config['Fortnite_Response_Dumper_Config']["Save_Empty_Cloudstorage"].lower() == "false") and (not reqGetCloudstorageFileText):
+        fileID, fileName = [cloudstorageIDList[cloudstorageCount], cloudstorageNameList[cloudstorageCount]]
+        reqGetCloudstorageFileText = requestText(session.get(links.cloudstorageRequest.format(f"system/{cloudstorageIDList[cloudstorageCount]}"), headers=headers, data=""), False)
+        if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText):
             cloudstorageCount += 1
             print(f"{cloudstorageCount}: Skipping {fileName} because it's empty.")
         else:
             cloudstorageFilePath = os.path.join(globalCSPath, f"{cloudstorageNameList[cloudstorageCount]}")
-            cloudstorageFile = open(cloudstorageFilePath, "w", encoding = "utf-8")
-            cloudstorageFile.write(reqGetCloudstorageFileText)
-            cloudstorageFile.close()
+            with open(cloudstorageFilePath, "w", encoding = "utf-8") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
             cloudstorageCount += 1
-            fileSize = round(os.path.getsize(cloudstorageFilePath)/1024, 1)
-            if str(fileSize).endswith(".0"): fileSize = round(fileSize)
+            fileSize = roundSize(cloudstorageFilePath)
             print(f"{cloudstorageCount}: Dumped {fileName} ({fileSize} KB)")
     print(f"\nGlobal Cloudstorage files have been successfully saved in {globalCSPath}.\n")
+    
 input("Press ENTER to close the program.\n")
 exit()

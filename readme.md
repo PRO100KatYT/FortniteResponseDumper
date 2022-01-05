@@ -4,18 +4,17 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.2.1 update:
-- A new config option called "Save_Empty_Cloudstorage".
-  - From now on, the program will not dump empty Cloudstorage files by default.
-  - You can change it via this option in the config file.
-- Changed the file size info to show an additional tenth of the size.
-- Fixed an issue with files paths on mobile devices.
+What's new in the 1.3.0 update:
+- The program's performance is significantly better.
+- Added an option to use the config setup or use the default config values.
 - Tweaked the program's code a little bit.
 ---
 
 ### How to use it?
 
-- After starting the FortniteResponseDumper.py for the first time (or after deleting the auth.json file), you will be asked if you are logged into your Epic account in your browser. If yes, type 1, if no, type 2.
+- After starting the FortniteResponseDumper.py for the first time (or after deleting the config.ini file) you will be asked if you want to start the config setup process or use the default config values. If you want to start the setup, type 1, if no, type 2.
+
+- Next, you will be asked if you are logged into your Epic account in your browser. If yes, type 1, if no, type 2.
 
 - After you'll press ENTER, an Epic Games website will open. From there, login if you are not already logged into your Epic account.
 
