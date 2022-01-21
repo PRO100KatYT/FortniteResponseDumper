@@ -4,9 +4,8 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.3.0 update:
-- The program's performance is significantly better.
-- Added an option to use the config setup or use the default config values.
+What's new in the 1.3.1 update:
+- The program is now able to save both old and new friendslist.
 - Tweaked the program's code a little bit.
 ---
 
