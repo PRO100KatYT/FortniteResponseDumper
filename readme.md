@@ -4,8 +4,12 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.3.1 update:
-- The program is now able to save both old and new friendslist.
+What's new in the 1.3.2 update:
+- The program is now able to dump the Friends Info (displayName, externalAuths, etc.)
+- Fixed the program displaying that "the authorization code you supplied was not issued for your client" when device auth was selected.
+- The program now correctly displays the Error message when the config auth type is different than the one in auth.json.
+- Simplified the friendslist related config entries into one - Dump_Friendlists.
+- Added the "Found a bug?" section to the readme.
 - Tweaked the program's code a little bit.
 ---
 
@@ -34,3 +38,10 @@ or this:
 - Now the program will start to dump the responses.
 
 - Congratulations, you just dumped Fortnite responses!
+
+---
+
+### Found a bug?
+Feel free to [open an issue](https://github.com/PRO100KatYT/FortniteResponseDumper/issues/new "Click here if you want to open an issue.") if you encounter any bugs or just have a question.
+
+---
