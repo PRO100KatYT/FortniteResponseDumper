@@ -4,12 +4,9 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.3.2 update:
-- The program is now able to dump the Friends Info (displayName, externalAuths, etc.)
-- Fixed the program displaying that "the authorization code you supplied was not issued for your client" when device auth was selected.
-- The program now correctly displays the Error message when the config auth type is different than the one in auth.json.
-- Simplified the friendslist related config entries into one - Dump_Friendlists.
-- Added the "Found a bug?" section to the readme.
+What's new in the 1.3.3 update:
+- The program is now able to dump the profile0 profile.
+  - Since this profile is no longer obtainable from Epic servers, the program recreates it using the profiles it was split to (campaign, common_core, common_public and metadata) plus adds maxed out Skill Tree and Research nodes in order to give the profile more functionality. I might add more improvements into it in the future.
 - Tweaked the program's code a little bit.
 ---
 
