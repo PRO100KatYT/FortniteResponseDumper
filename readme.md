@@ -4,9 +4,9 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.3.3 update:
-- The program is now able to dump the profile0 profile.
-  - Since this profile is no longer obtainable from Epic servers, the program recreates it using the profiles it was split to (campaign, common_core, common_public and metadata) plus adds maxed out Skill Tree and Research nodes in order to give the profile more functionality. I might add more improvements into it in the future.
+What's new in the 1.3.4 update:
+- The program is now able to dump the Discovery Tab responses.
+- Added a Survivor Portrait fix for the profile0 profile.
 - Tweaked the program's code a little bit.
 ---
 
