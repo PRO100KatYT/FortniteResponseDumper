@@ -8,6 +8,10 @@ What's new in the 1.3.4 update:
 - The program is now able to dump the Discovery Tab responses.
 - Added a Survivor Portrait fix for the profile0 profile.
 - Tweaked the program's code a little bit.
+What's new in the 1.3.5 update:
+- The program is now able to dump a lot more Discovery Tab responses.
+  - Single-paged Discovery panels are saved in the main Discovery Tab folder. Multi-paged Discovery panels are saved in it's subfolder in the main Discovery Tab folder.
+- Tweaked the program's code a little bit.
 ---
 
 ### How to use it?

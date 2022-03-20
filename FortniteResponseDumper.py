@@ -1,4 +1,4 @@
-version = "1.3.4"
+version = "1.3.5"
 configVersion = "1.3.4"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
@@ -20,8 +20,7 @@ class links:
     getDeviceAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/deviceAuth"
     singleResponses = {"Dump_Catalog": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/catalog", "{}", "Catalog (Item Shop)", "catalog"], "Dump_Keychain": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], "Dump_Contentpages": ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages (News)", "contentpages"], "Dump_Timeline": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], "Dump_Theater": ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]}
     profileRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/client/QueryProfile?profileId={1}"
-    discoveryRequests = [["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/creative/discovery/surface/{0}", "Discovery - Surface Frontend", "discovery_frontend", {"surfaceName":"CreativeDiscoverySurface_Frontend","revision":-1,"matchmakingRegion":"EU"}], ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/creative/discovery/surface/{0}", "Discovery - Surface Library", "discovery_library", {"surfaceName":"CreativeDiscoverySurface_Library","revision":-1,"matchmakingRegion":"EU"}]]
-    discoveryRecentlyPlayed = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/creative/discovery/surface/page/{0}"
+    discovery = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/creative/discovery/surface/{0}"
     friendlists = [["https://friends-public-service-prod06.ol.epicgames.com/friends/api/public/friends/{0}?includePending=true", "Friendslist #1", "friendslist"], ["https://friends-public-service-prod06.ol.epicgames.com/friends/api/v1/{0}/summary", "Friendslist #2", "friendslist2"]]
     friendsinfo = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account?{0}"
     cloudstorageRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/cloudstorage/{0}"
@@ -77,19 +76,19 @@ if not os.path.exists(configPath):
         iAuthorization_Type = validInput("Which authentication method do you want the program to use?\nToken auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\nDevice auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nValid vaules: token, device.", ["token", "device"])
         iLanguage = validInput(f"What language do you want some of the saved responses to be?\nValid vaules: {', '.join(langValues)}", langValues)
         iList = []
-        dumpOptionsJson = {"Dump_Catalog": "Catalog (Item Shop)", "Dump_Keychain": "Keychain", "Dump_Contentpages": "Contentpages (News)", "Dump_Timeline": "Timeline", "Dump_Theater": "Theater (StW World)", "Dump_Profiles": "Account Profiles", "Dump_Discovery": "Discovery Tab responses", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage"}
+        dumpOptionsJson = {"Dump_Catalog": "Catalog (Item Shop)", "Dump_Keychain": "Keychain", "Dump_Contentpages": "Contentpages (News)", "Dump_Timeline": "Timeline", "Dump_Theater": "Theater (StW World)", "Dump_Profiles": "Account Profiles", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage", "Dump_Discovery": "Discovery Tab responses"}
         for option in dumpOptionsJson: iList.append(validInput(f"Do you want the program to dump the {dumpOptionsJson[option]}?\nValid vaules: {', '.join(boolValues)}.", boolValues))
-        iDump_Catalog, iDump_Keychain, iDump_Contentpages, iDump_Timeline, iDump_Theater, iDump_Profiles, iDump_Discovery, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage = iList
+        iDump_Catalog, iDump_Keychain, iDump_Contentpages, iDump_Timeline, iDump_Theater, iDump_Profiles, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
         iSave_Empty_Cloudstorage = validInput(f"Do you want the program to save Global Cloudstorage files that are empty?\nValid vaules: {', '.join(boolValues)}.", boolValues)
-    else: iAuthorization_Type, iLanguage, iDump_Catalog, iDump_Keychain, iDump_Contentpages, iDump_Timeline, iDump_Theater, iDump_Profiles, iDump_Discovery, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage = ["token", "en", "true", "true", "true", "true", "true", "true", "true", "true", "true", "true", "false"]
-    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\n# Valid vaules: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid vaules: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr.\nLanguage = {iLanguage}\n\n# Do you want the program to dump the Catalog (Item Shop)?\n# Valid vaules: true, false.\nDump_Catalog = {iDump_Catalog}\n\n# Do you want the program to dump the Keychain?\n# Valid vaules: true, false.\nDump_Keychain = {iDump_Keychain}\n\n# Do you want the program to dump the Contentpages (News)?\n# Valid vaules: true, false.\nDump_Contentpages = {iDump_Contentpages}\n\n# Do you want the program to dump the Timeline?\n# Valid vaules: true, false.\nDump_Timeline = {iDump_Timeline}\n\n# Do you want the program to dump the Theater (StW World)?\n# Valid vaules: true, false.\nDump_Theater = {iDump_Theater}\n\n# Do you want the program to dump the account profiles?\n# Valid vaules: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid vaules: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid vaules: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid vaules: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid vaules: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid vaules: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
+    else: iAuthorization_Type, iLanguage, iDump_Catalog, iDump_Keychain, iDump_Contentpages, iDump_Timeline, iDump_Theater, iDump_Profiles, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery = ["token", "en", "true", "true", "true", "true", "true", "true", "true", "true", "true", "false", "true"]
+    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth metod generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\n# Valid vaules: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid vaules: de, ru, ko, en, it, fr, es, ar, ja, pl, es-419, tr.\nLanguage = {iLanguage}\n\n# Do you want the program to dump the Catalog (Item Shop)?\n# Valid vaules: true, false.\nDump_Catalog = {iDump_Catalog}\n\n# Do you want the program to dump the Keychain?\n# Valid vaules: true, false.\nDump_Keychain = {iDump_Keychain}\n\n# Do you want the program to dump the Contentpages (News)?\n# Valid vaules: true, false.\nDump_Contentpages = {iDump_Contentpages}\n\n# Do you want the program to dump the Timeline?\n# Valid vaules: true, false.\nDump_Timeline = {iDump_Timeline}\n\n# Do you want the program to dump the Theater (StW World)?\n# Valid vaules: true, false.\nDump_Theater = {iDump_Theater}\n\n# Do you want the program to dump the account profiles?\n# Valid vaules: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid vaules: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid vaules: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid vaules: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid vaules: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid vaules: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
     print("The config.ini file was generated successfully.\n")
 try:
     config.read(configPath)
-    configVer, authType, lang, bDumpCatalog, bDumpKeychain, bDumpContentpages, bDumpTimeline, bDumpTheater, bDumpProfiles, bDumpDiscovery, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Catalog'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Keychain'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Contentpages'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Timeline'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Theater'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower()]
+    configVer, authType, lang, bDumpCatalog, bDumpKeychain, bDumpContentpages, bDumpTimeline, bDumpTheater, bDumpProfiles, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Catalog'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Keychain'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Contentpages'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Timeline'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Theater'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower()]
 except:
     customError("The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.\n\nPress ENTER to close the program.\n")
-checkValuesJson, trueValues = [{"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Dump_Catalog": {"value": bDumpCatalog, "validValues": boolValues}, "Dump_Keychain": {"value": bDumpKeychain, "validValues": boolValues}, "Dump_Contentpages": {"value": bDumpContentpages, "validValues": boolValues}, "Dump_Timeline": {"value": bDumpTimeline, "validValues": boolValues}, "Dump_Theater": {"value": bDumpTheater, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}}, 0]
+checkValuesJson, trueValues = [{"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Dump_Catalog": {"value": bDumpCatalog, "validValues": boolValues}, "Dump_Keychain": {"value": bDumpKeychain, "validValues": boolValues}, "Dump_Contentpages": {"value": bDumpContentpages, "validValues": boolValues}, "Dump_Timeline": {"value": bDumpTimeline, "validValues": boolValues}, "Dump_Theater": {"value": bDumpTheater, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}, "Dump_Discovery": {"value": bDumpDiscovery, "validValues": boolValues}}, 0]
 for option in checkValuesJson:
     if not (checkValuesJson[option]['value'] in checkValuesJson[option]['validValues']): customError(f"You set the wrong {option} value in config.ini ({checkValuesJson[option]['value']}). Valid values: {', '.join(checkValuesJson[option]['validValues'])}. Please change it and run this program again.")
     elif checkValuesJson[option]['value'] == "false": links.singleResponses.pop(option, None)
@@ -139,7 +138,7 @@ if authType == "device": reqToken = requestText(session.post(links.getOAuth.form
 accessToken, displayName = [reqToken['access_token'], reqToken['displayName']]
 print(f"Logged in as {displayName}.\n")
 
-if bDumpCatalog == bDumpKeychain == bDumpContentpages == bDumpTimeline == bDumpTheater == bDumpProfiles == bDumpFriendlists == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
+if bDumpCatalog == bDumpKeychain == bDumpContentpages == bDumpTimeline == bDumpTheater == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 headers = {"User-Agent": "Fortnite/++Fortnite+Release-19.40-CL-19215531 Windows/10.0.19043.1.768.64bit", "Authorization": f"bearer {accessToken}", "Content-Type": "application/json", "X-EpicGames-Language": lang, "Accept-Language": lang}
 
 currentDate = datetime.today().strftime('%Y-%m-%d %H-%M-%S')
@@ -197,33 +196,6 @@ if bDumpProfiles == "true":
         fileSize = roundSize(profileFilePath)
         print(f"{profileCount}: Dumped the {profileId} profile ({fileSize} KB)")
     print(f"\n{displayName}'s profiles have been successfully saved in {profilePath}.\n")
-
-# Get and dump the Discovery responses.
-if bDumpDiscovery == "true":
-    discoveryPath = os.path.join(path, f"{displayName}'s Discovery Tab")
-    if not os.path.exists(discoveryPath): os.makedirs(discoveryPath)
-    testCohorts = []
-    for surface in links.discoveryRequests:
-        surface[3]['partyMemberIds'] = [accountId]
-        reqGetSurfaceText = requestText(session.post(surface[0].format(accountId), headers=headers, json=surface[3]), True)
-        surfaceFilePath = os.path.join(discoveryPath, f"{surface[2]}.json")
-        with open(surfaceFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetSurfaceText, fileToSave, indent = 2, ensure_ascii = False)
-        fileSize = roundSize(surfaceFilePath)
-        print(f"Dumped the {surface[1]} ({fileSize} KB)")
-        try:
-            if not testCohorts: testCohorts = reqGetSurfaceText['TestCohorts'] # the TestCohorts have to be grabbed from the "Discovery - Surface Frontend" response
-        except: []
-    pageIndex = 0
-    if testCohorts:
-        while True:
-            pageIndex += 1
-            reqGetRecentlyPlayedText = requestText(session.post(links.discoveryRecentlyPlayed.format(accountId), headers=headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","panelName":"Recently Played","pageIndex":pageIndex,"revision":-1,"testCohorts":testCohorts,"partyMemberIds":[accountId],"matchmakingRegion":"EU"}), True)
-            recentlyPlayedFilePath = os.path.join(discoveryPath, f"discovery_recentlyplayed{pageIndex}.json")
-            with open(recentlyPlayedFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetRecentlyPlayedText, fileToSave, indent = 2, ensure_ascii = False)
-            fileSize = roundSize(recentlyPlayedFilePath)
-            print(f"Dumped Discovery - Recently Played (Page {pageIndex}) ({fileSize} KB)")
-            if reqGetRecentlyPlayedText['hasMore'] == False: break
-    print(f"\n{displayName}'s Discovery Tab responses have been successfully saved in {discoveryPath}.\n")
 
 # Get and dump the Epic Friends related responses.
 if bDumpFriendlists == "true":
@@ -295,6 +267,39 @@ if bDumpGlobalCloudstorage == "true":
             fileSize = roundSize(cloudstorageFilePath)
             print(f"{cloudstorageCount}: Dumped {fileName} ({fileSize} KB)")
     print(f"\nGlobal Cloudstorage files have been successfully saved in {globalCSPath}.\n")
+
+# Get and dump the Discovery responses.
+if bDumpDiscovery == "true":
+    discoveryPath, testCohorts = [os.path.join(path, f"{displayName}'s Discovery Tab"), []]
+    if not os.path.exists(discoveryPath): os.makedirs(discoveryPath)
+    reqGetDiscoveryFrontend = requestText(session.post(links.discovery.format(accountId), headers=headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","revision":-1,"partyMemberIds":[accountId],"matchmakingRegion":"EU"}), True)
+    discoveryFrontendFilePath = os.path.join(discoveryPath, "discovery_frontend.json")
+    with open(discoveryFrontendFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryFrontend, fileToSave, indent = 2, ensure_ascii = False)
+    fileSize = roundSize(discoveryFrontendFilePath)
+    print(f"Dumped Discovery - Frontend ({fileSize} KB)")
+    try: testCohorts = reqGetDiscoveryFrontend['TestCohorts'] # the TestCohorts have to be grabbed from the "Discovery - Surface Frontend" response
+    except: []
+    if testCohorts:
+        for panelName in reqGetDiscoveryFrontend['Panels']:
+            panelName, pageIndex = [panelName['PanelName'], 0]
+            while True:
+                pageIndex += 1
+                reqGetPanel = requestText(session.post(links.discovery.format(f'page/{accountId}'), headers=headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","panelName":panelName,"pageIndex":pageIndex,"revision":-1,"testCohorts":testCohorts,"partyMemberIds":[accountId],"matchmakingRegion":"EU"}), True)
+                pageWord = f" (Page {pageIndex})"
+                if ((reqGetPanel['hasMore'] == False) and (pageIndex == 1)): panelFilePath, pageWord = [os.path.join(discoveryPath, f"discovery_{panelName.replace(' ', '')}.json".lower()), ""]
+                else:
+                    panelFilePath = os.path.join(discoveryPath, panelName)
+                    if not os.path.exists(panelFilePath): os.makedirs(panelFilePath)
+                    panelFilePath = os.path.join(panelFilePath, f"discovery_{panelName.replace(' ', '')}{pageIndex}.json".lower())
+                with open(panelFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetPanel, fileToSave, indent = 2, ensure_ascii = False)
+                fileSize = roundSize(panelFilePath)
+                print(f"Dumped Discovery - {panelName}{pageWord} ({fileSize} KB)")
+                if reqGetPanel['hasMore'] == False: break
+    reqGetDiscoveryLibrary = requestText(session.post(links.discovery.format(accountId), headers=headers, json={"surfaceName":"CreativeDiscoverySurface_Library","revision":-1,"partyMemberIds":[accountId],"matchmakingRegion":"EU"}), True)
+    discoveryLibraryFilePath = os.path.join(discoveryPath, "discovery_library.json")
+    with open(discoveryLibraryFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryLibrary, fileToSave, indent = 2, ensure_ascii = False)
+    fileSize = roundSize(discoveryLibraryFilePath)
+    print(f"Dumped Discovery - Library ({fileSize} KB)\n\n{displayName}'s Discovery Tab responses have been successfully saved in {discoveryPath}.\n")
     
 input("Press ENTER to close the program.\n")
 exit()
