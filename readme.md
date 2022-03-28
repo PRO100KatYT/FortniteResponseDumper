@@ -4,13 +4,9 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.3.4 update:
-- The program is now able to dump the Discovery Tab responses.
-- Added a Survivor Portrait fix for the profile0 profile.
-- Tweaked the program's code a little bit.
-What's new in the 1.3.5 update:
-- The program is now able to dump a lot more Discovery Tab responses.
-  - Single-paged Discovery panels are saved in the main Discovery Tab folder. Multi-paged Discovery panels are saved in it's subfolder in the main Discovery Tab folder.
+What's new in the 1.3.6 update:
+- Fixed the ```trtrunk_4_0``` Homebase Node being added wrongly to the profile0 profile.
+- Fixed the program crashing when it couldn't recreate the profile0 profile.
 - Tweaked the program's code a little bit.
 ---
 
@@ -44,5 +40,3 @@ or this:
 
 ### Found a bug?
 Feel free to [open an issue](https://github.com/PRO100KatYT/FortniteResponseDumper/issues/new "Click here if you want to open an issue.") if you encounter any bugs or just have a question.
-
----
