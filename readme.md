@@ -4,9 +4,9 @@ This program allows you to dump many Fortnite responses.
 
 ---
 ### Changelog:
-What's new in the 1.3.6 update:
-- Fixed the ```trtrunk_4_0``` Homebase Node being added wrongly to the profile0 profile.
-- Fixed the program crashing when it couldn't recreate the profile0 profile.
+What's new in the 1.3.7 update:
+- Fixed the clientsettings contents being not saved properly.
+- Made the program generate a random UUID for profile0 HomebaseNode key names to match the other profile items. (For example ```"83925978-8aa5-4619-a90b-ad9c3ea942f6"``` instead of ```"HomebaseNode:t4_research_143d055a13"```. The templateId stays the same of course.)
 - Tweaked the program's code a little bit.
 ---
 
