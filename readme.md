@@ -3,10 +3,30 @@
 This program allows you to dump many Fortnite responses.
 
 ---
+### Features:
+- Multiple account support with two login methods: refresh token and device auth.
+  - You can see more info about them and choose the method when adding an account.
+- The program is able to dump:
+  - catalog,
+  - keychain,
+  - contentpages,
+  - timeline,
+  - user profiles,
+  - other's Save the World profiles,
+  - user friendlists,
+  - discovery,
+  - account and global cloudstorage.
+- A config file where you can choose which responses to dump.
+---
 ### Changelog:
-What's new in the 1.3.7 update:
-- Fixed the clientsettings contents being not saved properly.
-- Made the program generate a random UUID for profile0 HomebaseNode key names to match the other profile items. (For example ```"83925978-8aa5-4619-a90b-ad9c3ea942f6"``` instead of ```"HomebaseNode:t4_research_143d055a13"```. The templateId stays the same of course.)
+What's new in the 1.4.0 update:
+- Merged the [Anyone's Save the World Profile Dumper](https://github.com/PRO100KatYT/AnyonesSTWProfileDumper) with Fortnite Response Dumper.
+- When someone else's profile0 is generated the program will now give and set the banner icon to the light blue OT11 one instead of leaving it empty.
+- Fixed a crash that the generated profile0 caused on some Fortnite builds because of the build failing to find Karolina's and Joel's portraits that didn't exist yet.
+- Fixed a crash that the generated profile0 caused on some Fortnite builds because of the build failing to open llamas that didn't exist yet.
+- Fixed a crash that the generated profile0 caused on some Fortnite builds because of the build failing to display the banner menu when some banners didn't exist yet.
+- If the ```Sorry the authorization code you supplied was not found. It is possible that it was no longer valid.``` error message will pop up, the program will no longer close. It will ask you to input the code again instead.
+- Added the ```Features``` section to the readme.
 - Tweaked the program's code a little bit.
 ---
 
@@ -32,10 +52,7 @@ or this:
 
 - If all went well, the program will say it has generated the auth.json file successfully.
 
-- Now the program will start to dump the responses.
-
-- Congratulations, you just dumped Fortnite responses!
-
+- Now you can either dump your account's responses or someone else's Save the World profile (campaign and common_public).
 ---
 
 ### Found a bug?
