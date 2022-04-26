@@ -7,26 +7,22 @@ This program allows you to dump many Fortnite responses.
 - Multiple account support with two login methods: refresh token and device auth.
   - You can see more info about them and choose the method when adding an account.
 - The program is able to dump:
-  - catalog,
-  - keychain,
-  - contentpages,
-  - timeline,
-  - user profiles,
-  - other's Save the World profiles,
+  - account and global cloudstorage,
+  - user profiles and other's Save the World profiles,
   - user friendlists,
-  - discovery,
-  - account and global cloudstorage.
+  - catalog responses,
+  - contentpages,
+  - discovery tab responses,
+  - keychain,
+  - timeline.
+
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.4.0 update:
-- Merged the [Anyone's Save the World Profile Dumper](https://github.com/PRO100KatYT/AnyonesSTWProfileDumper) with Fortnite Response Dumper.
-- When someone else's profile0 is generated the program will now give and set the banner icon to the light blue OT11 one instead of leaving it empty.
-- Fixed a crash that the generated profile0 caused on some Fortnite builds because of the build failing to find Karolina's and Joel's portraits that didn't exist yet.
-- Fixed a crash that the generated profile0 caused on some Fortnite builds because of the build failing to open llamas that didn't exist yet.
-- Fixed a crash that the generated profile0 caused on some Fortnite builds because of the build failing to display the banner menu when some banners didn't exist yet.
-- If the ```Sorry the authorization code you supplied was not found. It is possible that it was no longer valid.``` error message will pop up, the program will no longer close. It will ask you to input the code again instead.
-- Added the ```Features``` section to the readme.
+What's new in the 1.4.1 update:
+- Added two catalog related responses: bulkOffers and priceEngine.
+  - You can choose from what country do you want them to be via the config file.
+- Fixed the program saving some Homebase name characters in unicode in the profile.
 - Tweaked the program's code a little bit.
 ---
 
