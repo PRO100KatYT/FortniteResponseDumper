@@ -5,7 +5,6 @@ This program allows you to dump many Fortnite responses.
 ---
 ### Features:
 - Multiple account support with two login methods: refresh token and device auth.
-  - You can see more info about them and choose the method when adding an account.
 - The program is able to dump:
   - account and global cloudstorage,
   - user profiles and other's Save the World profiles,
