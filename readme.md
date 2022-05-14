@@ -18,10 +18,11 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.4.1 update:
-- Added two catalog related responses: bulkOffers and priceEngine.
-  - You can choose from what country do you want them to be via the config file.
-- Fixed the program saving some Homebase name characters in unicode in the profile.
+What's new in the 1.4.2 update:
+- The program is now able to dump the Account Information.
+- From now on when generating the config file with default values the Authorization_Type value will be set to the value from auth.json, if it exists.
+- Fixed an issue that sometimes caused the program to falsely display the `The refresh token has expired. Delete the auth.json file and run this program again to generate a new one.` error.
+- Fixed the program displaying the `Press ENTER to close the program.` message twice when displaying the outdated config error.
 - Tweaked the program's code a little bit.
 ---
 
