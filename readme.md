@@ -8,21 +8,26 @@ This program allows you to dump many Fortnite responses.
 - The program is able to dump:
   - account and global cloudstorage,
   - user profiles and other's Save the World profiles,
+  - account information,
+  - BR stats & inventory,
   - user friendlists,
   - catalog responses,
   - contentpages,
   - discovery tab responses,
   - keychain,
-  - timeline.
+  - timeline,
+  - theater (stw world).
 
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.4.2 update:
-- The program is now able to dump the Account Information.
-- From now on when generating the config file with default values the Authorization_Type value will be set to the value from auth.json, if it exists.
-- Fixed an issue that sometimes caused the program to falsely display the `The refresh token has expired. Delete the auth.json file and run this program again to generate a new one.` error.
-- Fixed the program displaying the `Press ENTER to close the program.` message twice when displaying the outdated config error.
+What's new in the 1.4.3 update:
+- Added the ability to save Battle Royale account statistics.
+- Added the ability to dump the Battle Royale inventory (bars).
+- Simplified the config - now contentpages, keychain, timeline and theater can be toggled under one `Dump_Single_Responses` option.
+- Temporarily fixed the issue when sometimes the priceengine response cannot be saved by making the program skip it when the error occurs.
+- The program now displays a more accurate file size if needed.
+- Fixed some typos.
 - Tweaked the program's code a little bit.
 ---
 
