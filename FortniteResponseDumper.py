@@ -1,5 +1,5 @@
-version = "1.4.3"
-configVersion = "1.4.3"
+version = "1.4.4"
+configVersion = "1.4.4"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
     import json
@@ -177,7 +177,9 @@ def dumpProfiles(profilesList, profile0ProfilesList, profilePath, headersFormat1
                     itemsToPop = []
                     if profileName.lower() == "campaign":
                         for item in profileContents[profileName]['items']:
-                            if profileContents[profileName]['items'][f'{item}']['templateId'].lower().startswith("worker:"): profileContents[profileName]['items'][f'{item}']['attributes']['portrait'] = f"/Game/UI/Icons/Icon-Worker/IconDefinitions/{profileContents[profileName]['items'][f'{item}']['attributes']['portrait'].split(':')[-1]}.{profileContents[profileName]['items'][f'{item}']['attributes']['portrait'].split(':')[-1]}"
+                            if profileContents[profileName]['items'][f'{item}']['templateId'].lower().startswith("worker:"):
+                                try: profileContents[profileName]['items'][f'{item}']['attributes']['portrait'] = f"/Game/UI/Icons/Icon-Worker/IconDefinitions/{profileContents[profileName]['items'][f'{item}']['attributes']['portrait'].split(':')[-1]}.{profileContents[profileName]['items'][f'{item}']['attributes']['portrait'].split(':')[-1]}"
+                                except: []
                             elif profileContents[profileName]['items'][f'{item}']['templateId'].lower().startswith("cardpack:") and (not (profileContents[profileName]['items'][f'{item}']['templateId'].lower() in supportedLlamas)): itemsToPop.append(f'{item}')
                             if profileContents[profileName]['items'][f'{item}']['templateId'].lower().startswith("worker:worker_karolina_ur") or profileContents[profileName]['items'][f'{item}']['templateId'].lower().startswith("worker:worker_joel_ur"): itemsToPop.append(f'{item}')
                         profile0['_id'], profile0['created'], profile0['updated'], profile0['rvn'], profile0['wipeNumber'], profile0['accountId'], profile0['version'], profile0['commandRevision'] = [profileContents[profileName]['_id'], profileContents[profileName]['created'], profileContents[profileName]['updated'], profileContents[profileName]['rvn'], profileContents[profileName]['wipeNumber'], profileContents[profileName]['accountId'], profileContents[profileName]['version'], profileContents[profileName]['commandRevision']]

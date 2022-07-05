@@ -21,13 +21,8 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.4.3 update:
-- Added the ability to save Battle Royale account statistics.
-- Added the ability to dump the Battle Royale inventory (bars).
-- Simplified the config - now contentpages, keychain, timeline and theater can be toggled under one `Dump_Single_Responses` option.
-- Temporarily fixed the issue when sometimes the priceengine response cannot be saved by making the program skip it when the error occurs.
-- The program now displays a more accurate file size if needed.
-- Fixed some typos.
+What's new in the 1.4.4 update:
+- Fixed the program crashing when a survivor doesn't have a `portrait` json object.
 - Tweaked the program's code a little bit.
 ---
 
