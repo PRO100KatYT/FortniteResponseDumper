@@ -1,5 +1,5 @@
-version = "1.4.4"
-configVersion = "1.4.4"
+version = "1.4.5"
+configVersion = "1.4.3"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
     import json
@@ -24,7 +24,7 @@ class links:
     catalogBulkOffers = "https://catalog-public-service-prod06.ol.epicgames.com/catalog/api/shared/bulk/offers?{0}"
     catalogPriceEngine = "https://priceengine-public-service-ecomprod01.ol.epicgames.com/priceengine/api/shared/offers/price"
     profileRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/{1}/{2}?profileId={3}"
-    discovery = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/creative/discovery/surface/{0}"
+    discovery = "https://fn-service-discovery-live-public.ogs.live.on.epicgames.com/api/v1/discovery/surface/{0}?appId=Fortnite"
     accountInfo = [["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}", "Account Info #1", "accountInfo1"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account?accountId={0}", "Account Info #2", "accountInfo2"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/externalAuths", "Account External Auths Info", "externalAuths"], ["https://statsproxy-public-service-live.ol.epicgames.com/statsproxy/api/statsv2/account/{0}", "Battle Royale account statistics", "brStats"], ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/br-inventory/account/{0}", "Battle Royale inventory (gold bars)", "brInventory"]]
     friendlists = [["https://friends-public-service-prod06.ol.epicgames.com/friends/api/public/friends/{0}?includePending=true", "Friendslist #1", "friendslist"], ["https://friends-public-service-prod06.ol.epicgames.com/friends/api/v1/{0}/summary", "Friendslist #2", "friendslist2"]]
     friendsinfo = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account?{0}"
@@ -239,14 +239,15 @@ def main():
     if bDumpSingleResponses == bDumpCatalog == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 
     # Get and dump single responses.
-    responseCount = 0
-    for response in links.singleResponses:
-        reqGetResponseText = requestText(session.get(response[0], headers=vars.headers, data=response[1]), True)
-        filePathToSave = os.path.join(vars.path, f"{response[3]}.json")
-        with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetResponseText, fileToSave, indent = 2, ensure_ascii = False)
-        fileSize = roundSize(filePathToSave)
-        print(f"Dumped the {response[2]} ({fileSize} KB) to {filePathToSave}.\n")
-        responseCount += 1
+    if bDumpSingleResponses == "true":
+        responseCount = 0
+        for response in links.singleResponses:
+            reqGetResponseText = requestText(session.get(response[0], headers=vars.headers, data=response[1]), True)
+            filePathToSave = os.path.join(vars.path, f"{response[3]}.json")
+            with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetResponseText, fileToSave, indent = 2, ensure_ascii = False)
+            fileSize = roundSize(filePathToSave)
+            print(f"Dumped the {response[2]} ({fileSize} KB) to {filePathToSave}.\n")
+            responseCount += 1
 
     # Get and dump catalog related responses.
     if bDumpCatalog == "true":
@@ -273,17 +274,7 @@ def main():
             filePathToSave = os.path.join(catalogPath, "bulkOffers.json")
             with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetBulkOffers, fileToSave, indent = 2, ensure_ascii = False)
             fileSize = roundSize(filePathToSave)
-            print(f"Dumped the Catalog Bulk Offers ({fileSize} KB)")
-            lineOffers = []
-            for id in appStoreIds: lineOffers.append({"offerId": id, "quantity": 1})
-            reqGetPriceEngine = json.loads(session.post(links.catalogPriceEngine, headers=vars.headers, json={"accountId": vars.accountId, "calculateTax": False, "lineOffers": lineOffers, "country": country.upper()}).text)
-            if "errorMessage" in reqGetPriceEngine: print(f"Failed to dump the Catalog Price Engine. Error message: {reqGetPriceEngine['errorMessage']}")
-            else:
-                filePathToSave = os.path.join(catalogPath, "priceEngine.json")
-                with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetPriceEngine, fileToSave, indent = 2, ensure_ascii = False)
-                fileSize = roundSize(filePathToSave)
-                print(f"Dumped the Catalog Price Engine ({fileSize} KB)\n")
-            print(f"Catalog responses have been successfully saved in {catalogPath}.\n")
+            print(f"Dumped the Catalog Bulk Offers ({fileSize} KB)\nCatalog responses have been successfully saved in {catalogPath}.\n")
 
     # Get and dump the profiles.
     if bDumpProfiles == "true":
@@ -371,14 +362,15 @@ def main():
         with open(discoveryFrontendFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryFrontend, fileToSave, indent = 2, ensure_ascii = False)
         fileSize = roundSize(discoveryFrontendFilePath)
         print(f"Dumped Discovery - Frontend ({fileSize} KB)")
-        try: testCohorts = reqGetDiscoveryFrontend['TestCohorts'] # the TestCohorts have to be grabbed from the "Discovery - Surface Frontend" response
+        try: testCohorts = reqGetDiscoveryFrontend['testCohorts'] # the TestCohorts have to be grabbed from the "Discovery - Surface Frontend" response
         except: []
         if testCohorts:
-            for panelName in reqGetDiscoveryFrontend['Panels']:
-                panelName, pageIndex = [panelName['PanelName'], 0]
+            for panelName in reqGetDiscoveryFrontend['panels']:
+                panelName, pageIndex = [panelName['panelName'], 0]
                 while True:
                     pageIndex += 1
                     reqGetPanel = requestText(session.post(links.discovery.format(f'page/{vars.accountId}'), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","panelName":panelName,"pageIndex":pageIndex,"revision":-1,"testCohorts":testCohorts,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
+                    for item in reqGetPanel['results']: mnemonic.append({"mnemonic": item['linkCode'], "type": "", "filter": False, "v": ""})
                     pageWord = f" (Page {pageIndex})"
                     if ((reqGetPanel['hasMore'] == False) and (pageIndex == 1)): panelFilePath, pageWord = [os.path.join(discoveryPath, f"discovery_{panelName.replace(' ', '')}.json".lower()), ""]
                     else:

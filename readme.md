@@ -21,8 +21,10 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.4.4 update:
-- Fixed the program crashing when a survivor doesn't have a `portrait` json object.
+What's new in the 1.4.5 update:
+- Updated the discovery tab api endpoints fixing the program not being able to dump it.
+- Fixed the program dumping single responses even if Dump_Single_Responses was set to false in the config.
+- Removed the not working PriceEngine catalog dump.
 - Tweaked the program's code a little bit.
 ---
 
