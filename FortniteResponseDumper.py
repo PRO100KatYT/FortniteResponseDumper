@@ -1,5 +1,5 @@
-version = "1.4.5"
-configVersion = "1.4.3"
+version = "1.5.0"
+configVersion = "1.5.0"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
     import json
@@ -9,6 +9,9 @@ try:
     from datetime import datetime
     import webbrowser
     import uuid
+    import threading
+    import re
+    from urllib.parse import urlparse
 except Exception as emsg:
     input(f"ERROR: {emsg}. To run this program, please install it.\n\nPress ENTER to close the program.")
     exit()
@@ -19,23 +22,27 @@ class links:
     loginLink2 = "https://www.epicgames.com/id/logout?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Flogin%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D{0}%2526responseType%253Dcode"
     getOAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/{0}"
     getDeviceAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/deviceAuth"
-    singleResponses = [["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"], ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]]
-    catalog = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/catalog"
+    singleResponses = [["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]]
+    catalog = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/catalog"
     catalogBulkOffers = "https://catalog-public-service-prod06.ol.epicgames.com/catalog/api/shared/bulk/offers?{0}"
     catalogPriceEngine = "https://priceengine-public-service-ecomprod01.ol.epicgames.com/priceengine/api/shared/offers/price"
-    profileRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/{1}/{2}?profileId={3}"
+    profileRequest = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/{1}/{2}?profileId={3}"
     discovery = "https://fn-service-discovery-live-public.ogs.live.on.epicgames.com/api/v1/discovery/surface/{0}?appId=Fortnite"
-    accountInfo = [["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}", "Account Info #1", "accountInfo1"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account?accountId={0}", "Account Info #2", "accountInfo2"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/externalAuths", "Account External Auths Info", "externalAuths"], ["https://statsproxy-public-service-live.ol.epicgames.com/statsproxy/api/statsv2/account/{0}", "Battle Royale account statistics", "brStats"], ["https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/br-inventory/account/{0}", "Battle Royale inventory (gold bars)", "brInventory"]]
+    linksDiscovery = "https://links-public-service-live.ol.epicgames.com/links/api/fn/mnemonic/{0}/related"
+    accountInfo = [["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}", "Account Info #1", "accountInfo1"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account?accountId={0}", "Account Info #2", "accountInfo2"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/externalAuths", "Account External Auths Info", "externalAuths"], ["https://statsproxy-public-service-live.ol.epicgames.com/statsproxy/api/statsv2/account/{0}", "Battle Royale account statistics", "brStats"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/br-inventory/account/{0}", "Battle Royale inventory (gold bars)", "brInventory"]]
     friendlists = [["https://friends-public-service-prod06.ol.epicgames.com/friends/api/public/friends/{0}?includePending=true", "Friendslist #1", "friendslist"], ["https://friends-public-service-prod06.ol.epicgames.com/friends/api/v1/{0}/summary", "Friendslist #2", "friendslist2"]]
     friendsinfo = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account?{0}"
-    cloudstorageRequest = "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/cloudstorage/{0}"
+    cloudstorageRequest = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/cloudstorage/{0}"
     getAccountIdByName = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/displayName/{0}"
 
-# Global variables
+# Global variables.
 class vars: accessToken = displayName = headers = path = accountId = ""
 
 # Start a new requests session.
 session = requests.Session()
+
+# Threading setup.
+semaphore = threading.Semaphore(199)
 
 # Error with a custom message.
 def customError(text):
@@ -76,11 +83,9 @@ def reqTokenText(loginLink, altLoginLink, authHeader):
     return reqToken
 
 # Round the file size.
-def roundSize(filePathToSave):
-    fileSize = round(os.path.getsize(filePathToSave)/1024, 1)
-    if str(fileSize).endswith(".0"): fileSize = round(fileSize)
-    if fileSize == 0: fileSize = round(os.path.getsize(filePathToSave)/1024, 2)
-    return fileSize
+def roundSize(file_path: str) -> float:
+    file_size = os.path.getsize(file_path) / 1024
+    return round(file_size, 1 if file_size >= 0.1 else 2)
 
 # Create and/or read the config.ini file.
 config, configPath, authPath = [ConfigParser(), os.path.join(os.path.split(os.path.abspath(__file__))[0], "config.ini"), os.path.join(os.path.split(os.path.abspath(__file__))[0], "auth.json")]
@@ -93,22 +98,22 @@ if not os.path.exists(configPath):
         iLanguage = validInput(f"What language do you want some of the saved responses to be?\nValid values: {', '.join(langValues)}", langValues)
         iCountry = validInput(f"From what country do you want some of the saved responses to be?\nValid values: {', '.join(countryValues)}", countryValues)
         iList = []
-        dumpOptionsJson = {"Dump_Single_Responses": "Single Responses (contentpages, timeline, etc.)", "Dump_Catalog": "Catalog (Item Shop) responses", "Dump_Profiles": "Account Profiles", "Dump_Account_Info": "Account Information and Battle Royale statistics", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage", "Dump_Discovery": "Discovery Tab responses"}
+        dumpOptionsJson = {"Dump_Images": "Images from links in dumped files (e.g. from contentpages or Discovery).", "Dump_Single_Responses": "Single Responses (contentpages, timeline, etc.)", "Dump_Catalog": "Catalog (Item Shop) responses", "Dump_Profiles": "Account Profiles", "Dump_Account_Info": "Account Information and Battle Royale statistics", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage", "Dump_Discovery": "Discovery Tab responses"}
         for option in dumpOptionsJson: iList.append(validInput(f"Do you want the program to dump the {dumpOptionsJson[option]}?\nValid values: {', '.join(boolValues)}.", boolValues))
-        iDump_Single_Responses, iDump_Catalog, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
+        iDump_Images, iDump_Single_Responses, iDump_Catalog, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
         iSave_Empty_Cloudstorage = validInput(f"Do you want the program to save Global Cloudstorage files that are empty?\nValid values: {', '.join(boolValues)}.", boolValues)
     else:
-        iAuthorization_Type, iLanguage, iCountry, iDump_Single_Responses, iDump_Catalog, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery = ["token", "en", "us", "true", "true", "true", "true", "true", "true", "true", "false", "true"]
+        iAuthorization_Type, iLanguage, iCountry, iDump_Images, iDump_Single_Responses, iDump_Catalog, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery = ["token", "en", "us", "true", "true", "true", "true", "true", "true", "true", "true", "false", "true"]
         try: iAuthorization_Type = json.loads(open(authPath, "r").read())["authType"]
         except: []
-    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth method generates a refresh token to log in. The limit per IP is 1. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date and limit per IP, but can after some time cause epic to ask you to change your password.\n# Valid values: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid values: {', '.join(langValues)}.\nLanguage = {iLanguage}\n\n# From what country do you want some of the saved responses to be?\n# Valid values: {', '.join(countryValues)}.\nCountry = {iCountry}\n\n# Do you want the program to dump the Single Responses (contentpages, timeline, etc.)?\n# Valid values: true, false.\nDump_Single_Responses = {iDump_Single_Responses}\n\n# Do you want the program to dump the Catalog (Item Shop) responses?\n# Valid values: true, false.\nDump_Catalog = {iDump_Catalog}\n\n# Do you want the program to dump the account profiles?\n# Valid values: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Account Information and Battle Royale statistics? It may contain some personal data.\n# Valid values: true, false.\nDump_Account_Info = {iDump_Account_Info}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid values: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid values: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid values: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid values: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid values: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
+    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth method generates a refresh token to log in. The limit per IP is 1. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date and limit per IP, but can after some time cause epic to ask you to change your password.\n# Valid values: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid values: {', '.join(langValues)}.\nLanguage = {iLanguage}\n\n# From what country do you want some of the saved responses to be?\n# Valid values: {', '.join(countryValues)}.\nCountry = {iCountry}\n\n# Do you want the program to dump images from links in dumped files (e.g. from contentpages or Discovery)?\n# Valid values: true, false.\nDump_Images = {iDump_Images}\n\n# Do you want the program to dump the Single Responses (contentpages, timeline, etc.)?\n# Valid values: true, false.\nDump_Single_Responses = {iDump_Single_Responses}\n\n# Do you want the program to dump the Catalog (Item Shop) responses?\n# Valid values: true, false.\nDump_Catalog = {iDump_Catalog}\n\n# Do you want the program to dump the account profiles?\n# Valid values: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Account Information and Battle Royale statistics? It may contain some personal data.\n# Valid values: true, false.\nDump_Account_Info = {iDump_Account_Info}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid values: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid values: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid values: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid values: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid values: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
     print("The config.ini file was generated successfully.\n")
 try:
     config.read(configPath)
-    configVer, authType, lang, country, bDumpSingleResponses, bDumpCatalog, bDumpProfiles, bDumpAcocuntInfo, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Country'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Single_Responses'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Catalog'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Info'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower()]
+    configVer, authType, lang, country, bDumpImages, bDumpSingleResponses, bDumpCatalog, bDumpProfiles, bDumpAcocuntInfo, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Country'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Images'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Single_Responses'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Catalog'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Info'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower()]
 except:
     customError("The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.")
-checkValuesJson = {"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Country": {"value": country, "validValues": countryValues}, "Dump_Single_Responses": {"value": bDumpSingleResponses, "validValues": boolValues}, "Dump_Catalog": {"value": bDumpCatalog, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Account_Info": {"value": bDumpAcocuntInfo, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}, "Dump_Discovery": {"value": bDumpDiscovery, "validValues": boolValues}}
+checkValuesJson = {"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Country": {"value": country, "validValues": countryValues}, "Dump_Images": {"value": bDumpImages, "validValues": boolValues}, "Dump_Single_Responses": {"value": bDumpSingleResponses, "validValues": boolValues}, "Dump_Catalog": {"value": bDumpCatalog, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Account_Info": {"value": bDumpAcocuntInfo, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}, "Dump_Discovery": {"value": bDumpDiscovery, "validValues": boolValues}}
 for option in checkValuesJson:
     if not (checkValuesJson[option]['value'] in checkValuesJson[option]['validValues']): customError(f"You set the wrong {option} value in config.ini ({checkValuesJson[option]['value']}). Valid values: {', '.join(checkValuesJson[option]['validValues'])}. Please change it and run this program again.")
 if not (configVer == f"FRD_{configVersion}"): customError("The config file is outdated. Delete the config.ini file and run this program again to generate a new one.")
@@ -117,14 +122,12 @@ if not (configVer == f"FRD_{configVersion}"): customError("The config file is ou
 if not os.path.exists(authPath):
     isLoggedIn = validInput("Starting to generate the auth.json file.\n\nAre you logged into your Epic account that you would like the program to use in your browser?\nType 1 if yes and press ENTER.\nType 2 if no and press ENTER.\n", ["1", "2"])
     input("The program is going to open an Epic Games webpage.\nTo continue, press ENTER.\n")
-    if isLoggedIn == "1": loginLink = links.loginLink1
-    else: loginLink = links.loginLink2
+    loginLink = links.loginLink1 if isLoggedIn == "1" else links.loginLink2
+    reqToken = reqTokenText(loginLink.format("34a02cf8f4414e29b15921876da36f9a"), links.loginLink1.format("34a02cf8f4414e29b15921876da36f9a"), "MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y=") if authType == "token" else reqTokenText(loginLink.format("3446cd72694c4a4485d81b77adbb2141"), links.loginLink1.format("3446cd72694c4a4485d81b77adbb2141"), "MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE=")
     if authType == "token":
-        reqToken = reqTokenText(loginLink.format("34a02cf8f4414e29b15921876da36f9a"), links.loginLink1.format("34a02cf8f4414e29b15921876da36f9a"), "MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y=")
         refreshToken, vars.accountId, expirationDate = [reqToken["refresh_token"], reqToken["account_id"], reqToken["refresh_expires_at"]]
         with open(authPath, "w") as authFile: json.dump({"WARNING": "Don't show anyone the contents of this file, because it contains information with which the program logs into the account.", "authType": "token", "refreshToken": refreshToken, "accountId": vars.accountId, "refresh_expires_at": expirationDate}, authFile, indent = 2)
     else:
-        reqToken = reqTokenText(loginLink.format("3446cd72694c4a4485d81b77adbb2141"), links.loginLink1.format("3446cd72694c4a4485d81b77adbb2141"), "MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE=")
         accessToken, vars.accountId = [reqToken["access_token"], reqToken["account_id"]]
         reqDeviceAuth = requestText(session.post(links.getDeviceAuth.format(vars.accountId), headers={"Authorization": f"bearer {accessToken}"}, data={}), True)
         deviceId, secret = [reqDeviceAuth["deviceId"], reqDeviceAuth["secret"]]
@@ -133,7 +136,7 @@ if not os.path.exists(authPath):
 
 # Log in.
 def login():
-    authJson = json.loads(open(authPath, "r").read())
+    with open(authPath, "r") as authFile: authJson = json.load(authFile)
     try: authJson["authType"]
     except: customError("The program is unable to read the auth.json file. Delete the auth.json file and run this program again to generate a new one.")
     if authType == "token":
@@ -146,7 +149,7 @@ def login():
     vars.accountId = authJson["accountId"]
     if authType == "token": # Shoutout to BayGamerYT for telling me about this login method.
         reqRefreshToken = requestText(session.post(links.getOAuth.format("token"), headers={"Authorization": "basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y="}, data={"grant_type": "refresh_token", "refresh_token": refreshToken}), True)
-        with open(authPath, "r") as getAuthFile: authFile = json.loads(getAuthFile.read())
+        with open(authPath, "r") as getAuthFile: authFile = json.load(getAuthFile)
         authFile['refreshToken'], authFile['refresh_expires_at'] = [reqRefreshToken["refresh_token"], reqRefreshToken["refresh_expires_at"]]
         with open(authPath, "w") as getAuthFile: json.dump(authFile, getAuthFile, indent = 2)
         reqExchange = requestText(session.get(links.getOAuth.format("exchange"), headers={"Authorization": f"bearer {reqRefreshToken['access_token']}"}, data={"grant_type": "authorization_code"}), True)
@@ -218,10 +221,12 @@ def dumpProfiles(profilesList, profile0ProfilesList, profilePath, headersFormat1
 # The Anyone's StW Profile Dumper part of the program.
 def anyonesStWProfileDumper():
     # Get the account id using displayname.
-    while True:
-        reqGetAccountId = json.loads(session.get(links.getAccountIdByName.format(input("Insert the epic displayname of the account whose Save the World profiles you'd want the program to save:\n")), headers=vars.headers, data="{}").text)
-        if not ("errorMessage" in reqGetAccountId): break
-        else: print(f"ERROR: {reqGetAccountId['errorMessage']}. Please try again with a different username.\n")
+    nameInput = input("Insert the epic games display name of the account whose Save the World profiles you'd want the program to save:\n")
+    if not nameInput: print(f"You didn't input anything.\n"); return
+    print(); login()
+    reqGetAccountId = json.loads(session.get(links.getAccountIdByName.format(nameInput), headers=vars.headers, data="{}").text)
+    if "errorMessage" in reqGetAccountId:
+        print(f"ERROR: {reqGetAccountId['errorMessage']}. Please try again with a different username.\n"); return
     accountId, displayName = [reqGetAccountId['id'], reqGetAccountId['displayName']]
 
     publicProfilePath, publicProfilesList = [os.path.join(vars.path, f"{displayName}'s STW Profiles"), ["campaign", "common_public", "profile0"]]  # profile0 has to be after campaign and common_public since the program is going to recreate it using them.
@@ -230,7 +235,7 @@ def anyonesStWProfileDumper():
     # Get and dump the profiles.
     profilesWord, haveWord = ["profiles", "have"]
     if len(publicProfilesList) == 1: profilesWord, haveWord = ["profile", "has"]
-    print(f"\nDumping {len(publicProfilesList)} {displayName}'s Save the World {profilesWord}...\n")
+    print(f"Dumping {len(publicProfilesList)} {displayName}'s Save the World {profilesWord}...\n")
     dumpProfiles(publicProfilesList, ["campaign", "common_public"], publicProfilePath, accountId, "public", "QueryPublicProfile")
     print(f"\n{displayName}'s Save the World {profilesWord} {haveWord} been successfully saved in {publicProfilePath}.\n")
 
@@ -238,16 +243,45 @@ def anyonesStWProfileDumper():
 def main():
     if bDumpSingleResponses == bDumpCatalog == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 
+    print("Starting the main program...\n")
+    login()
+
     # Get and dump single responses.
     if bDumpSingleResponses == "true":
-        responseCount = 0
+        def download_image(link, responseName):
+            imagesPath = os.path.join(vars.path, "images")
+            if not os.path.exists(imagesPath): os.makedirs(imagesPath)
+            image_data = session.get(link).content
+            filename = os.path.basename(urlparse(link).path)
+            image_path = os.path.join(imagesPath, filename)
+            with open(image_path, 'wb') as f: f.write(image_data)
+            print(f"Dumped {filename} from {responseName}.\n")
+
+        def download_response(response):
+            semaphore.acquire()
+            try:
+                reqGetResponseText = requestText(session.get(response[0], headers=vars.headers, data=response[1]), True)
+                filePathToSave = os.path.join(vars.path, f"{response[3]}.json")
+                with open(filePathToSave, "w", encoding="utf-8") as fileToSave:
+                    json.dump(reqGetResponseText, fileToSave, indent=2, ensure_ascii=False)
+                fileSize = roundSize(filePathToSave)
+                print(f"Dumped the {response[2]} ({fileSize} KB) to {filePathToSave}.\n")
+
+                if bDumpImages == "true":
+                    image_links = re.findall(r'(https?:\/\/\S+\.(?:jpg|jpeg|png|gif))', str(reqGetResponseText))
+                    anotherThreads = []
+                    for link in image_links:
+                        thread = threading.Thread(target=download_image, args=(link, response[3]))
+                        thread.start(); anotherThreads.append(thread)
+                    for thread in anotherThreads: thread.join()
+            finally:
+                semaphore.release()
+
+        threads = []
         for response in links.singleResponses:
-            reqGetResponseText = requestText(session.get(response[0], headers=vars.headers, data=response[1]), True)
-            filePathToSave = os.path.join(vars.path, f"{response[3]}.json")
-            with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetResponseText, fileToSave, indent = 2, ensure_ascii = False)
-            fileSize = roundSize(filePathToSave)
-            print(f"Dumped the {response[2]} ({fileSize} KB) to {filePathToSave}.\n")
-            responseCount += 1
+            thread = threading.Thread(target=download_response, args=(response,))
+            thread.start(); threads.append(thread)
+        for thread in threads: thread.join()
 
     # Get and dump catalog related responses.
     if bDumpCatalog == "true":
@@ -289,12 +323,20 @@ def main():
     if bDumpAcocuntInfo == "true":
         accountInfoPath = os.path.join(vars.path, f"{vars.displayName}'s Account Info")
         if not os.path.exists(accountInfoPath): os.makedirs(accountInfoPath)
+        def download_account_info(response):
+            semaphore.acquire()
+            try:
+                reqGetResponseText = requestText(session.get(response[0].format(vars.accountId), headers=vars.headers, data=""), True)
+                filePathToSave = os.path.join(accountInfoPath, f"{response[2]}.json")
+                with open(filePathToSave, "w", encoding="utf-8") as fileToSave: json.dump(reqGetResponseText, fileToSave, indent=2, ensure_ascii=False)
+                fileSize = roundSize(filePathToSave)
+                print(f"Dumped the {response[1]} ({fileSize} KB)")
+            finally: semaphore.release()
+        threads = []
         for response in links.accountInfo:
-            reqGetResponseText = requestText(session.get(response[0].format(vars.accountId), headers=vars.headers, data=""), True)
-            filePathToSave = os.path.join(accountInfoPath, f"{response[2]}.json")
-            with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetResponseText, fileToSave, indent = 2, ensure_ascii = False)
-            fileSize = roundSize(filePathToSave)
-            print(f"Dumped the {response[1]} ({fileSize} KB)")
+            thread = threading.Thread(target=download_account_info, args=(response,))
+            thread.start(); threads.append(thread)
+        for thread in threads: thread.join()
         print(f"\n{vars.displayName}'s Account Information responses have been successfully saved in {accountInfoPath}.\n")
 
     # Get and dump the Epic Friends related responses.
@@ -317,46 +359,59 @@ def main():
         fileSize = roundSize(friendsInfoFilePath)
         print(f"Dumped the Friends Info ({fileSize} KB)\n\n{vars.displayName}'s Epic Friends responses have been successfully saved in {friendsPath}.\n")
 
-    # Get and dump the account Cloudstorage.
-    if bDumpAccountCloudstorage == "true":
-        userCSPath = os.path.join(vars.path, f"{vars.displayName}'s Cloudstorage")
-        if not os.path.exists(userCSPath): os.makedirs(userCSPath)
-        reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}"), headers=vars.headers, data="{}"), True)
-        cloudstorageCount = 0
-        print(f"Starting to dump {len(reqGetCloudstorageText)} {vars.displayName}'s Cloudstorage files")
-        for key in reqGetCloudstorageText:
-            reqGetCloudstorageFileText = session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}/{key['uniqueFilename']}"), headers=vars.headers, data="").content
-            cloudstorageCount += 1
-            if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText): print(f"{cloudstorageCount}: Skipping {key['filename']} because it's empty.")
-            else:
-                cloudstorageFilePath = os.path.join(userCSPath, f"{key['filename']}")
-                with open(cloudstorageFilePath, "wb") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
-                fileSize = roundSize(cloudstorageFilePath)
-                print(f"{cloudstorageCount}: Dumped {key['filename']} ({fileSize} KB)")
-        print(f"\n{vars.displayName}'s Cloudstorage files have been successfully saved in {userCSPath}.\n")
+        # Get and dump the account Cloudstorage.
+        if bDumpAccountCloudstorage == "true":
+            def download_file(key):
+                semaphore.acquire()
+                try:
+                    reqGetCloudstorageFileText = session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}/{key['uniqueFilename']}"), headers=vars.headers, data="").content
+                    if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText): print(f"Skipping {key['filename']} because it's empty.")
+                    else:
+                        cloudstorageFilePath = os.path.join(userCSPath, f"{key['filename']}")
+                        with open(cloudstorageFilePath, "wb") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
+                        fileSize = roundSize(cloudstorageFilePath)
+                        print(f"Dumped {key['filename']} ({fileSize} KB)")
+                finally: semaphore.release()
+            userCSPath = os.path.join(vars.path, f"{vars.displayName}'s Cloudstorage")
+            if not os.path.exists(userCSPath): os.makedirs(userCSPath)
+            reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}"), headers=vars.headers, data="{}"), True)
+            print(f"Starting to dump {len(reqGetCloudstorageText)} {vars.displayName}'s Cloudstorage files")
+            threads = []
+            for key in reqGetCloudstorageText:
+                thread = threading.Thread(target=download_file, args=(key,))
+                thread.start(); threads.append(thread)
+            for thread in threads: thread.join()
+            print(f"\n{vars.displayName}'s Cloudstorage files have been successfully saved in {userCSPath}.\n")
 
     # Get and dump the global Cloudstorage.
     if bDumpGlobalCloudstorage == "true":
+        def download_file(key):
+            semaphore.acquire()
+            try:
+                reqGetCloudstorageFileText = requestText(session.get(links.cloudstorageRequest.format(f"system/{key['uniqueFilename']}"), headers=vars.headers, data=""), False)
+                if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText): print(f"Skipping {key['filename']} because it's empty.")
+                else:
+                    cloudstorageFilePath = os.path.join(globalCSPath, f"{key['filename']}")
+                    with open(cloudstorageFilePath, "w", encoding="utf-8") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
+                    fileSize = roundSize(cloudstorageFilePath)
+                    print(f"Dumped {key['filename']} ({fileSize} KB)")
+            finally: semaphore.release()
         globalCSPath = os.path.join(vars.path, "Global Cloudstorage")
         if not os.path.exists(globalCSPath): os.makedirs(globalCSPath)
         reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format("system"), headers=vars.headers, data="{}"), True)
-        cloudstorageCount = 0
         print(f"Starting to dump {len(reqGetCloudstorageText)} global Cloudstorage files")
+        threads = []
         for key in reqGetCloudstorageText:
-            reqGetCloudstorageFileText = requestText(session.get(links.cloudstorageRequest.format(f"system/{key['uniqueFilename']}"), headers=vars.headers, data=""), False)
-            cloudstorageCount += 1
-            if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText): print(f"{cloudstorageCount}: Skipping {key['filename']} because it's empty.")
-            else:
-                cloudstorageFilePath = os.path.join(globalCSPath, f"{key['filename']}")
-                with open(cloudstorageFilePath, "w", encoding = "utf-8") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
-                fileSize = roundSize(cloudstorageFilePath)
-                print(f"{cloudstorageCount}: Dumped {key['filename']} ({fileSize} KB)")
+            thread = threading.Thread(target=download_file, args=(key,))
+            thread.start(); threads.append(thread)
+        for thread in threads: thread.join()
         print(f"\nGlobal Cloudstorage files have been successfully saved in {globalCSPath}.\n")
 
     # Get and dump the Discovery responses.
     if bDumpDiscovery == "true":
-        discoveryPath, testCohorts = [os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab"), []]
-        if not os.path.exists(discoveryPath): os.makedirs(discoveryPath)
+        discoveryPath, linksPath, imagesPath, testCohorts = [os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "surface"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "links"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "images"), []]
+        for path in [discoveryPath, linksPath, imagesPath]:
+            if not os.path.exists(path): os.makedirs(path)
         reqGetDiscoveryFrontend = requestText(session.post(links.discovery.format(vars.accountId), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","revision":-1,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
         discoveryFrontendFilePath = os.path.join(discoveryPath, "discovery_frontend.json")
         with open(discoveryFrontendFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryFrontend, fileToSave, indent = 2, ensure_ascii = False)
@@ -365,22 +420,56 @@ def main():
         try: testCohorts = reqGetDiscoveryFrontend['testCohorts'] # the TestCohorts have to be grabbed from the "Discovery - Surface Frontend" response
         except: []
         if testCohorts:
-            for panelName in reqGetDiscoveryFrontend['panels']:
-                panelName, pageIndex = [panelName['panelName'], 0]
-                while True:
-                    pageIndex += 1
+            bKeepRunning = [True]
+            def download_file(panelName, pageIndex):
+                semaphore.acquire()
+                try:
                     reqGetPanel = requestText(session.post(links.discovery.format(f'page/{vars.accountId}'), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","panelName":panelName,"pageIndex":pageIndex,"revision":-1,"testCohorts":testCohorts,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
-                    for item in reqGetPanel['results']: mnemonic.append({"mnemonic": item['linkCode'], "type": "", "filter": False, "v": ""})
                     pageWord = f" (Page {pageIndex})"
                     if ((reqGetPanel['hasMore'] == False) and (pageIndex == 1)): panelFilePath, pageWord = [os.path.join(discoveryPath, f"discovery_{panelName.replace(' ', '')}.json".lower()), ""]
                     else:
                         panelFilePath = os.path.join(discoveryPath, panelName)
                         if not os.path.exists(panelFilePath): os.makedirs(panelFilePath)
                         panelFilePath = os.path.join(panelFilePath, f"discovery_{panelName.replace(' ', '')}{pageIndex}.json".lower())
-                    with open(panelFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetPanel, fileToSave, indent = 2, ensure_ascii = False)
-                    fileSize = roundSize(panelFilePath)
-                    print(f"Dumped Discovery - {panelName}{pageWord} ({fileSize} KB)")
-                    if reqGetPanel['hasMore'] == False: break
+                    if reqGetPanel['hasMore'] or (not reqGetPanel['hasMore'] and reqGetPanel['results']):
+                        with open(panelFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetPanel, fileToSave, indent = 2, ensure_ascii = False)
+                        fileSize = roundSize(panelFilePath)
+                        print(f"Dumped Discovery - {panelName}{pageWord} ({fileSize} KB)")
+                        def download_link(linkCode):
+                            reqGetLink = requestText(session.get(links.linksDiscovery.format(linkCode), headers=vars.headers), True)
+                            linksFilePath = os.path.join(linksPath, f"{linkCode.replace(' ', '')}.json".lower())
+                            with open(linksFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetLink, fileToSave, indent = 2, ensure_ascii = False)
+                            fileSize = roundSize(linksFilePath)
+                            print(f"Dumped Discovery Link - {linkCode} ({fileSize} KB)")
+                            if bDumpImages == "true":
+                                try:
+                                    imageUrl = reqGetLink["links"][linkCode]["metadata"]["image_url"]
+                                    reqGetImage = session.get(imageUrl, headers=vars.headers)
+                                    imagesFilePath = os.path.join(imagesPath, f"{linkCode.replace(' ', '')}.{reqGetImage.headers['Content-Type'].split('/')[-1]}".lower())
+                                    with open(imagesFilePath, "wb") as fileToSave: fileToSave.write(reqGetImage.content)
+                                    fileSize = roundSize(linksFilePath)
+                                    print(f"Dumped Discovery Image - {linkCode} ({fileSize} KB)")
+                                except: []
+                        anotherThreads = []
+                        for i in reqGetPanel['results']:
+                            linkCode = i["linkCode"]
+                            thread = threading.Thread(target=download_link, args=(linkCode,))
+                            thread.start(); anotherThreads.append(thread)
+                        for thread in anotherThreads: thread.join()
+                finally: semaphore.release()        
+                bKeepRunning[0] = reqGetPanel['hasMore']
+            for panelName in reqGetDiscoveryFrontend['panels']:
+                bKeepRunning[0] = True
+                panelName, pageIndex = [panelName['panelName'], 0]
+                while bKeepRunning[0]:
+                    if pageIndex > 1:
+                        threads = []
+                        for i in range (0, 76):
+                            pageIndex += 1
+                            thread = threading.Thread(target=download_file, args=(panelName, pageIndex,))
+                            thread.start(); threads.append(thread)
+                        for thread in threads: thread.join()
+                    else: pageIndex += 1; download_file(panelName, pageIndex)
         reqGetDiscoveryLibrary = requestText(session.post(links.discovery.format(vars.accountId), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Library","revision":-1,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
         discoveryLibraryFilePath = os.path.join(discoveryPath, "discovery_library.json")
         with open(discoveryLibraryFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryLibrary, fileToSave, indent = 2, ensure_ascii = False)
@@ -389,13 +478,11 @@ def main():
     
 # Start the program
 while True:
-    whatToDo = validInput("Main menu:\nType 1 if you want to start the main program and press ENTER.\nType 2 if you want to dump someone else's Save the World profiles and press ENTER.\nType 3 if you want to stop the program and press ENTER.", ["1", "2", "3"])
-    if whatToDo == "3": break
-    login()
+    whatToDo = validInput("Main menu:\nType 1 if you want to start the main program and press ENTER.\nType 2 if you want to dump someone else's Save the World profiles and press ENTER.\nIf you want to stop the program leave the input blank and press ENTER.", ["1", "2", ""])
+    if not whatToDo : break
     vars.path = os.path.join(os.path.split(os.path.abspath(__file__))[0], "Dumped files", datetime.today().strftime('%Y-%m-%d %H-%M-%S'))
     if not os.path.exists(vars.path): os.makedirs(vars.path)
     if whatToDo == "1": main()
     elif whatToDo == "2": anyonesStWProfileDumper()
 
-input("Press ENTER to close the program.\n")
 exit()
