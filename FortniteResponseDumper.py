@@ -1,5 +1,5 @@
-version = "1.5.0"
-configVersion = "1.5.0"
+version = "1.5.1"
+configVersion = "1.5.1"
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 try:
     import json
@@ -22,10 +22,7 @@ class links:
     loginLink2 = "https://www.epicgames.com/id/logout?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Flogin%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D{0}%2526responseType%253Dcode"
     getOAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/{0}"
     getDeviceAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/deviceAuth"
-    singleResponses = [["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]]
-    catalog = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/catalog"
-    catalogBulkOffers = "https://catalog-public-service-prod06.ol.epicgames.com/catalog/api/shared/bulk/offers?{0}"
-    catalogPriceEngine = "https://priceengine-public-service-ecomprod01.ol.epicgames.com/priceengine/api/shared/offers/price"
+    singleResponses = [["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/catalog", "{}", "Catalog", "catalog"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]]
     profileRequest = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/{1}/{2}?profileId={3}"
     discovery = "https://fn-service-discovery-live-public.ogs.live.on.epicgames.com/api/v1/discovery/surface/{0}?appId=Fortnite"
     linksDiscovery = "https://links-public-service-live.ol.epicgames.com/links/api/fn/mnemonic/{0}/related"
@@ -98,22 +95,22 @@ if not os.path.exists(configPath):
         iLanguage = validInput(f"What language do you want some of the saved responses to be?\nValid values: {', '.join(langValues)}", langValues)
         iCountry = validInput(f"From what country do you want some of the saved responses to be?\nValid values: {', '.join(countryValues)}", countryValues)
         iList = []
-        dumpOptionsJson = {"Dump_Images": "Images from links in dumped files (e.g. from contentpages or Discovery).", "Dump_Single_Responses": "Single Responses (contentpages, timeline, etc.)", "Dump_Catalog": "Catalog (Item Shop) responses", "Dump_Profiles": "Account Profiles", "Dump_Account_Info": "Account Information and Battle Royale statistics", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage", "Dump_Discovery": "Discovery Tab responses"}
+        dumpOptionsJson = {"Dump_Images": "Images from links in dumped files (e.g. from contentpages or Discovery).", "Dump_Single_Responses": "Single Responses (contentpages, timeline, catalog, etc.)", "Dump_Profiles": "Account Profiles", "Dump_Account_Info": "Account Information and Battle Royale statistics", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage", "Dump_Discovery": "Discovery Tab responses"}
         for option in dumpOptionsJson: iList.append(validInput(f"Do you want the program to dump the {dumpOptionsJson[option]}?\nValid values: {', '.join(boolValues)}.", boolValues))
-        iDump_Images, iDump_Single_Responses, iDump_Catalog, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
+        iDump_Images, iDump_Single_Responses, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
         iSave_Empty_Cloudstorage = validInput(f"Do you want the program to save Global Cloudstorage files that are empty?\nValid values: {', '.join(boolValues)}.", boolValues)
     else:
-        iAuthorization_Type, iLanguage, iCountry, iDump_Images, iDump_Single_Responses, iDump_Catalog, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery = ["token", "en", "us", "true", "true", "true", "true", "true", "true", "true", "true", "false", "true"]
+        iAuthorization_Type, iLanguage, iCountry, iDump_Images, iDump_Single_Responses, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery = ["token", "en", "us", "false", "true", "true", "true", "true", "true", "true", "false", "true"]
         try: iAuthorization_Type = json.loads(open(authPath, "r").read())["authType"]
         except: []
-    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth method generates a refresh token to log in. The limit per IP is 1. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date and limit per IP, but can after some time cause epic to ask you to change your password.\n# Valid values: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid values: {', '.join(langValues)}.\nLanguage = {iLanguage}\n\n# From what country do you want some of the saved responses to be?\n# Valid values: {', '.join(countryValues)}.\nCountry = {iCountry}\n\n# Do you want the program to dump images from links in dumped files (e.g. from contentpages or Discovery)?\n# Valid values: true, false.\nDump_Images = {iDump_Images}\n\n# Do you want the program to dump the Single Responses (contentpages, timeline, etc.)?\n# Valid values: true, false.\nDump_Single_Responses = {iDump_Single_Responses}\n\n# Do you want the program to dump the Catalog (Item Shop) responses?\n# Valid values: true, false.\nDump_Catalog = {iDump_Catalog}\n\n# Do you want the program to dump the account profiles?\n# Valid values: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Account Information and Battle Royale statistics? It may contain some personal data.\n# Valid values: true, false.\nDump_Account_Info = {iDump_Account_Info}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid values: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid values: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid values: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid values: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid values: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
+    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth method generates a refresh token to log in. The limit per IP is 1. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date and limit per IP, but can after some time cause epic to ask you to change your password.\n# Valid values: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid values: {', '.join(langValues)}.\nLanguage = {iLanguage}\n\n# From what country do you want some of the saved responses to be?\n# Valid values: {', '.join(countryValues)}.\nCountry = {iCountry}\n\n# Do you want the program to dump images from links in dumped files (e.g. from contentpages or Discovery)?\n# Valid values: true, false.\nDump_Images = {iDump_Images}\n\n# Do you want the program to dump the Single Responses (contentpages, timeline, catalog, etc.)?\n# Valid values: true, false.\nDump_Single_Responses = {iDump_Single_Responses}\n\n# Do you want the program to dump the account profiles?\n# Valid values: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Account Information and Battle Royale statistics? It may contain some personal data.\n# Valid values: true, false.\nDump_Account_Info = {iDump_Account_Info}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid values: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid values: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid values: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid values: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid values: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
     print("The config.ini file was generated successfully.\n")
 try:
     config.read(configPath)
-    configVer, authType, lang, country, bDumpImages, bDumpSingleResponses, bDumpCatalog, bDumpProfiles, bDumpAcocuntInfo, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Country'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Images'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Single_Responses'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Catalog'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Info'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower()]
+    configVer, authType, lang, country, bDumpImages, bDumpSingleResponses, bDumpProfiles, bDumpAcocuntInfo, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Country'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Images'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Single_Responses'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Info'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower()]
 except:
     customError("The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.")
-checkValuesJson = {"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Country": {"value": country, "validValues": countryValues}, "Dump_Images": {"value": bDumpImages, "validValues": boolValues}, "Dump_Single_Responses": {"value": bDumpSingleResponses, "validValues": boolValues}, "Dump_Catalog": {"value": bDumpCatalog, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Account_Info": {"value": bDumpAcocuntInfo, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}, "Dump_Discovery": {"value": bDumpDiscovery, "validValues": boolValues}}
+checkValuesJson = {"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Country": {"value": country, "validValues": countryValues}, "Dump_Images": {"value": bDumpImages, "validValues": boolValues}, "Dump_Single_Responses": {"value": bDumpSingleResponses, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Account_Info": {"value": bDumpAcocuntInfo, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}, "Dump_Discovery": {"value": bDumpDiscovery, "validValues": boolValues}}
 for option in checkValuesJson:
     if not (checkValuesJson[option]['value'] in checkValuesJson[option]['validValues']): customError(f"You set the wrong {option} value in config.ini ({checkValuesJson[option]['value']}). Valid values: {', '.join(checkValuesJson[option]['validValues'])}. Please change it and run this program again.")
 if not (configVer == f"FRD_{configVersion}"): customError("The config file is outdated. Delete the config.ini file and run this program again to generate a new one.")
@@ -241,7 +238,7 @@ def anyonesStWProfileDumper():
 
 # The main part of the program
 def main():
-    if bDumpSingleResponses == bDumpCatalog == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
+    if bDumpSingleResponses == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 
     print("Starting the main program...\n")
     login()
@@ -282,33 +279,6 @@ def main():
             thread = threading.Thread(target=download_response, args=(response,))
             thread.start(); threads.append(thread)
         for thread in threads: thread.join()
-
-    # Get and dump catalog related responses.
-    if bDumpCatalog == "true":
-        catalogPath = os.path.join(vars.path, "Catalog Responses")
-        if not os.path.exists(catalogPath): os.makedirs(catalogPath)
-        reqGetCatalog = requestText(session.get(links.catalog, headers=vars.headers, data="{}"), True)
-        filePathToSave = os.path.join(catalogPath, "catalog.json")
-        with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetCatalog, fileToSave, indent = 2, ensure_ascii = False)
-        fileSize = roundSize(filePathToSave)
-        print(f"Dumped the Catalog ({fileSize} KB)")
-        appStoreIds = []
-        for storefront in reqGetCatalog['storefronts']:
-            for catalogEntry in storefront['catalogEntries']:
-                try:
-                    if catalogEntry['appStoreId'][1]: appStoreIds.append(catalogEntry['appStoreId'][1])
-                except: []
-        if appStoreIds:
-            bulkFormat = ""
-            for id in appStoreIds:
-                if appStoreIds != "": bulkFormat += "&"
-                bulkFormat += f"id={id}"
-            bulkFormat += f"&returnItemDetails=true&country={country.upper()}&locale={lang}"
-            reqGetBulkOffers = requestText(session.get(links.catalogBulkOffers.format(bulkFormat), headers=vars.headers, data="{}"), True)
-            filePathToSave = os.path.join(catalogPath, "bulkOffers.json")
-            with open(filePathToSave, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetBulkOffers, fileToSave, indent = 2, ensure_ascii = False)
-            fileSize = roundSize(filePathToSave)
-            print(f"Dumped the Catalog Bulk Offers ({fileSize} KB)\nCatalog responses have been successfully saved in {catalogPath}.\n")
 
     # Get and dump the profiles.
     if bDumpProfiles == "true":

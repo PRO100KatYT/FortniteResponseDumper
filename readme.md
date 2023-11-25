@@ -21,18 +21,11 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.5.0 update:
-- Applied threading to most of the program, making it significantly faster.
-- Updated the `https://fortnite-public-service-prod11.ol.epicgames.com` url to `https://fngw-mcp-gc-livefn.ol.epicgames.com`.
-- Added images dumping to the program (e.g. from contentpages or Discovery Tab).
-- The program now can dump the links Discovery Tab responses.
-  - Seperated the Discovery Tab responses folder into three: surface, links and images.
-  - Fixed the program crashing when starting to dump the Discovery Tab responses.
-- Made the program log in after providing the display name for Anyone's STW profile dumper instead of doing it before the input.
-- Made it so in the Main Menu you have to just press ENTER without any input if you want to exit the program instead of having to type `3` in the input.
-- The program will now go back to the Main Menu after an error in the Anyone's STW profile dumper.
-- Added the `Starting the main program...` message.
-- Rewritten some parts of the code.
+What's new in the 1.5.1 update:
+- Removed the BulkOffers dumping from the program and moved the catalog response back to single responses section of the program.
+  - Due to that the catalog response will generate when `Dump_Single_Responses` is set to true in config.ini.
+- Set the default config value for `Dump_Images` to `false`.
+- Tweaked the code a little bit.
 ---
 
 ### How to use it?
