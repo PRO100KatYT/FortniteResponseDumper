@@ -21,11 +21,15 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.5.1 update:
-- Removed the BulkOffers dumping from the program and moved the catalog response back to single responses section of the program.
-  - Due to that the catalog response will generate when `Dump_Single_Responses` is set to true in config.ini.
-- Set the default config value for `Dump_Images` to `false`.
-- Tweaked the code a little bit.
+What's new in the 1.6.0 update:
+- Added the option to dump MOTDs for 6 game modes (stw, sparks, delmar, br, juno, eco).
+  - You can toggle this feature in config.ini
+- Update checker at the start of the program (togglable via config)
+- Fixed a bug which caused the account Cloudstorage to dump only when Dump_Friendslist & Dump_Account_Cloudstorage were enabled at the same time, instead of doing so only when Dump_Account_Cloudstorage was enabled.
+- Fixed the program not dumping the friendlist when the account has more than 100 friends added ([Issue #8](https://github.com/PRO100KatYT/FortniteResponseDumper/issues/8)).
+- The program will no longer make a folder for Discovery images when the config option for dumping images is set to false.
+- Added a .gitignore file to the repository.
+- Tweaked the code a little bit (e.g. made the config part of the program a bit clearer to read).
 ---
 
 ### How to use it?

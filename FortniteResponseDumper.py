@@ -1,6 +1,7 @@
-version = "1.5.1"
-configVersion = "1.5.1"
-print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
+versionNum = 24
+version = "1.6.0"
+configVersion = "1.6.0"
+
 try:
     import json
     import requests
@@ -11,6 +12,7 @@ try:
     import uuid
     import threading
     import re
+    import textwrap
     from urllib.parse import urlparse
 except Exception as emsg:
     input(f"ERROR: {emsg}. To run this program, please install it.\n\nPress ENTER to close the program.")
@@ -22,13 +24,32 @@ class links:
     loginLink2 = "https://www.epicgames.com/id/logout?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Flogin%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D{0}%2526responseType%253Dcode"
     getOAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/{0}"
     getDeviceAuth = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/deviceAuth"
-    singleResponses = [["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/catalog", "{}", "Catalog", "catalog"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"], ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]]
+    singleResponses = [
+        ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/catalog", "{}", "Catalog", "catalog"],
+        ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"],
+        ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"],
+        ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"],
+        ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]
+    ]
     profileRequest = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/{1}/{2}?profileId={3}"
+    motd = "https://prm-dialogue-public-api-prod.edea.live.use1a.on.epicgames.com/api/v1/fortnite-br/surfaces/{0}/target"
     discovery = "https://fn-service-discovery-live-public.ogs.live.on.epicgames.com/api/v1/discovery/surface/{0}?appId=Fortnite"
     linksDiscovery = "https://links-public-service-live.ol.epicgames.com/links/api/fn/mnemonic/{0}/related"
-    accountInfo = [["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}", "Account Info #1", "accountInfo1"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account?accountId={0}", "Account Info #2", "accountInfo2"], ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/externalAuths", "Account External Auths Info", "externalAuths"], ["https://statsproxy-public-service-live.ol.epicgames.com/statsproxy/api/statsv2/account/{0}", "Battle Royale account statistics", "brStats"], ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/br-inventory/account/{0}", "Battle Royale inventory (gold bars)", "brInventory"]]
-    friendlists = [["https://friends-public-service-prod06.ol.epicgames.com/friends/api/public/friends/{0}?includePending=true", "Friendslist #1", "friendslist"], ["https://friends-public-service-prod06.ol.epicgames.com/friends/api/v1/{0}/summary", "Friendslist #2", "friendslist2"]]
+    accountInfo = [
+        ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}", "Account Info #1", "accountInfo1"],
+        ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account?accountId={0}", "Account Info #2", "accountInfo2"],
+        ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}/externalAuths", "Account External Auths Info", "externalAuths"],
+        ["https://statsproxy-public-service-live.ol.epicgames.com/statsproxy/api/statsv2/account/{0}", "Battle Royale account statistics", "brStats"],
+        ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/br-inventory/account/{0}", "Battle Royale inventory (gold bars)", "brInventory"]
+    ]
+    friendlists = [
+        ["https://friends-public-service-prod06.ol.epicgames.com/friends/api/public/friends/{0}?includePending=true", "Friendslist #1", "friendslist"],
+        ["https://friends-public-service-prod06.ol.epicgames.com/friends/api/v1/{0}/summary", "Friendslist #2", "friendslist2"]
+    ]
     friendsinfo = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account?{0}"
+    sparkTracksContentpages = "https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game/spark-tracks"
+    sparkTracksInfo = "https://cdn.qstv.on.epicgames.com/{0}"
+    radioStationsContentpages = "https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game/radio-stations"
     cloudstorageRequest = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/cloudstorage/{0}"
     getAccountIdByName = "https://account-public-service-prod.ol.epicgames.com/account/api/public/account/displayName/{0}"
 
@@ -47,7 +68,7 @@ def customError(text):
     exit()
 
 # Error for invalid config values.
-def configError(key, value, validValues): customError(f"You set the wrong {key} value in config.ini ({value}). Valid values: {validValues}. Please change it and run this program again.")
+def configError(key, value, validValues): customError(f"You set the wrong {key} value in config.ini ({value}). Available options: {validValues}. Please change it and run this program again.")
 
 # Loop input until the response is one of the correct values.
 def validInput(text, values):
@@ -84,6 +105,16 @@ def roundSize(file_path: str) -> float:
     file_size = os.path.getsize(file_path) / 1024
     return round(file_size, 1 if file_size >= 0.1 else 2)
 
+# Check if there is a newer version of this program available.
+def checkUpdate():
+    if bCheckForUpdates == "false": return
+    try:
+        getJson = (session.get("https://raw.githubusercontent.com/PRO100KatYT/FortniteResponseDumper/main/FortniteResponseDumper.py").text).splitlines()[0:2]
+        latestVerNum = int(getJson[0].split("=")[1].strip())
+        latestVerStr = getJson[1].split("=")[1].strip().strip('"')
+        if latestVerNum > versionNum: print(f"There is a newer version v{latestVerStr} available on GitHub!\n(https://github.com/PRO100KatYT/FortniteResponseDumper)\n")
+    except: []
+
 # Create and/or read the config.ini file.
 config, configPath, authPath = [ConfigParser(), os.path.join(os.path.split(os.path.abspath(__file__))[0], "config.ini"), os.path.join(os.path.split(os.path.abspath(__file__))[0], "auth.json")]
 langValues, countryValues, boolValues = [["ar", "de", "en", "es", "es-419", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr"], ["ar", "au", "by", "ca", "ch", "co", "cz", "dk", "gb", "hu", "il", "in", "ke", "kr", "kz", "mx", "my", "no", "nz", "pe", "pl", "rs", "ru", "sa", "se", "sg", "th", "tr", "ua", "us", "za"], ["true", "false"]]
@@ -91,28 +122,104 @@ if not os.path.exists(configPath):
     print("Starting to generate the config.ini file.\n")
     bStartSetup = validInput("Type 1 if you want to start the config setup and press ENTER.\nType 2 if you want to use the default config values and press ENTER.", ["1", "2"])
     if bStartSetup == "1":
-        iAuthorization_Type = validInput("Which authentication method do you want the program to use?\nToken auth method generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\nDevice auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nValid values: token, device.", ["token", "device"])
-        iLanguage = validInput(f"What language do you want some of the saved responses to be?\nValid values: {', '.join(langValues)}", langValues)
-        iCountry = validInput(f"From what country do you want some of the saved responses to be?\nValid values: {', '.join(countryValues)}", countryValues)
+        iAuthorization_Type = validInput("Which authentication method do you want the program to use?\nToken auth method generates a refresh token to log in. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\nDevice auth method generates authorization credentials that don't have an expiration date, but can after some time cause epic to ask you to change your password.\nAvailable options: token, device.", ["token", "device"])
+        iLanguage = validInput(f"What language do you want some of the saved responses to be?\nAvailable options: {', '.join(langValues)}", langValues)
+        iCountry = validInput(f"From what country do you want some of the saved responses to be?\nAvailable options: {', '.join(countryValues)}", countryValues)
         iList = []
-        dumpOptionsJson = {"Dump_Images": "Images from links in dumped files (e.g. from contentpages or Discovery).", "Dump_Single_Responses": "Single Responses (contentpages, timeline, catalog, etc.)", "Dump_Profiles": "Account Profiles", "Dump_Account_Info": "Account Information and Battle Royale statistics", "Dump_Friendlists": "Epic Friends related responses", "Dump_Account_Cloudstorage": "Account Cloudstorage", "Dump_Global_Cloudstorage": "Global Cloudstorage", "Dump_Discovery": "Discovery Tab responses"}
-        for option in dumpOptionsJson: iList.append(validInput(f"Do you want the program to dump the {dumpOptionsJson[option]}?\nValid values: {', '.join(boolValues)}.", boolValues))
-        iDump_Images, iDump_Single_Responses, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
-        iSave_Empty_Cloudstorage = validInput(f"Do you want the program to save Global Cloudstorage files that are empty?\nValid values: {', '.join(boolValues)}.", boolValues)
+        dumpOptionsJson = {
+            "Dump_Images": "Images from links in dumped files (e.g. from contentpages or discovery)",
+            "Dump_Single_Responses": "Single Responses (contentpages, timeline, catalog, etc.)",
+            "Dump_MOTDs": "gamemode MOTDs (messages of the day)",
+            "Dump_Profiles": "Account Profiles",
+            "Dump_Account_Info": "Account Information and Battle Royale statistics",
+            "Dump_Friendlists": "Epic Friends related responses",
+            "Dump_Account_Cloudstorage": "the Account Cloudstorage",
+            "Dump_Global_Cloudstorage": "the Global Cloudstorage",
+            "Dump_Discovery": "Discovery Tab responses"
+        }
+        for option in dumpOptionsJson: iList.append(validInput(f"Do you want the program to dump {dumpOptionsJson[option]}?\nAvailable options: {', '.join(boolValues)}.", boolValues))
+        iDump_Images, iDump_Single_Responses, iDump_MOTDs, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iDump_Discovery = iList
+        iSave_Empty_Cloudstorage = validInput(f"Do you want the program to save Global Cloudstorage files that are empty?\nAvailable options: {', '.join(boolValues)}.", boolValues)
+        iCheck_For_Updates = validInput(f"Do you want the program to check for updates on startup?\nAvailable options: {', '.join(boolValues)}.", boolValues)
     else:
-        iAuthorization_Type, iLanguage, iCountry, iDump_Images, iDump_Single_Responses, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery = ["token", "en", "us", "false", "true", "true", "true", "true", "true", "true", "false", "true"]
+        iAuthorization_Type, iLanguage, iCountry, iDump_Images, iDump_Single_Responses, iDump_MOTDs, iDump_Profiles, iDump_Account_Info, iDump_Friendlists, iDump_Account_Cloudstorage, iDump_Global_Cloudstorage, iSave_Empty_Cloudstorage, iDump_Discovery, iCheck_For_Updates = ["token", "en", "us", "false", "true", "true", "true", "true", "true", "true", "true", "false", "true", "true"]
         try: iAuthorization_Type = json.loads(open(authPath, "r").read())["authType"]
         except: []
-    with open(configPath, "w") as configFile: configFile.write(f"[Fortnite_Response_Dumper_Config]\n\n# Which authentication method do you want the program to use?\n# Token auth method generates a refresh token to log in. The limit per IP is 1. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.\n# Device auth method generates authorization credentials that don't have an expiration date and limit per IP, but can after some time cause epic to ask you to change your password.\n# Valid values: token, device.\nAuthorization_Type = {iAuthorization_Type}\n\n# What language do you want some of the saved responses to be?\n# Valid values: {', '.join(langValues)}.\nLanguage = {iLanguage}\n\n# From what country do you want some of the saved responses to be?\n# Valid values: {', '.join(countryValues)}.\nCountry = {iCountry}\n\n# Do you want the program to dump images from links in dumped files (e.g. from contentpages or Discovery)?\n# Valid values: true, false.\nDump_Images = {iDump_Images}\n\n# Do you want the program to dump the Single Responses (contentpages, timeline, catalog, etc.)?\n# Valid values: true, false.\nDump_Single_Responses = {iDump_Single_Responses}\n\n# Do you want the program to dump the account profiles?\n# Valid values: true, false.\nDump_Profiles = {iDump_Profiles}\n\n# Do you want the program to dump the Account Information and Battle Royale statistics? It may contain some personal data.\n# Valid values: true, false.\nDump_Account_Info = {iDump_Account_Info}\n\n# Do you want the program to dump the Epic Friends related responses?\n# Valid values: true, false.\nDump_Friendlists = {iDump_Friendlists}\n\n# Do you want the program to dump the account Cloudstorage?\n# Valid values: true, false.\nDump_Account_Cloudstorage = {iDump_Account_Cloudstorage}\n\n# Do you want the program to dump the global Cloudstorage?\n# Valid values: true, false.\nDump_Global_Cloudstorage = {iDump_Global_Cloudstorage}\n\n# Do you want the program to save Cloudstorage files that are empty?\n# Valid values: true, false.\nSave_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}\n\n# Do you want the program to dump the Discovery Tab responses?\n# Valid values: true, false.\nDump_Discovery = {iDump_Discovery}\n\n# Do not change anything below.\n[Config_Version]\nVersion = FRD_{configVersion}")
+    with open(configPath, "w") as configFile:
+        configFile.write(textwrap.dedent(f"""
+            [Fortnite_Response_Dumper_Config]
+            
+            # Which authentication method do you want the program to use?
+            # Token auth method generates a refresh token to log in. The limit per IP is 1. After 23 days of not using this program this token will expire and you will have to regenerate the auth file.
+            # Device auth method generates authorization credentials that don't have an expiration date and limit per IP, but can after some time cause epic to ask you to change your password.
+            # Available options: token, device.
+            Authorization_Type = {iAuthorization_Type}
+            
+            # What language do you want some of the saved responses to be?
+            # Available options: {', '.join(langValues)}.
+            Language = {iLanguage}
+            
+            # From what country do you want some of the saved responses to be?
+            # Available options: {', '.join(countryValues)}.
+            Country = {iCountry}
+            
+            # Do you want the program to dump images from links in dumped files (e.g. from contentpages or Discovery)?
+            # Available options: true, false.
+            Dump_Images = {iDump_Images}
+            
+            # Do you want the program to dump Single Responses (contentpages, timeline, catalog, etc.)?
+            # Available options: true, false.
+            Dump_Single_Responses = {iDump_Single_Responses}
+
+            # Do you want the program to dump gamemode MOTDs (messages of the day)?
+            # Available options: true, false.
+            Dump_MOTDs = {iDump_MOTDs}
+            
+            # Do you want the program to dump account profiles?
+            # Available options: true, false.
+            Dump_Profiles = {iDump_Profiles}
+            
+            # Do you want the program to dump Account Information and Battle Royale statistics? It may contain some personal data.
+            # Available options: true, false.
+            Dump_Account_Info = {iDump_Account_Info}
+            
+            # Do you want the program to dump Epic Friends related responses?
+            # Available options: true, false.
+            Dump_Friendlists = {iDump_Friendlists}
+            
+            # Do you want the program to dump the account Cloudstorage?
+            # Available options: true, false.
+            Dump_Account_Cloudstorage = {iDump_Account_Cloudstorage}
+            
+            # Do you want the program to dump the global Cloudstorage?
+            # Available options: true, false.
+            Dump_Global_Cloudstorage = {iDump_Global_Cloudstorage}
+            
+            # Do you want the program to save Cloudstorage files that are empty?
+            # Available options: true, false.
+            Save_Empty_Cloudstorage = {iSave_Empty_Cloudstorage}
+            
+            # Do you want the program to dump Discovery Tab responses?
+            # Available options: true, false.
+            Dump_Discovery = {iDump_Discovery}
+
+            # Do you want the program to check for updates on startup?
+            # Available options: true, false.
+            Check_For_Updates = {iCheck_For_Updates}
+            
+            # Do not change anything below.
+            [Config_Version]
+            Version = FRD_{configVersion}
+        """).lstrip("\n"))
     print("The config.ini file was generated successfully.\n")
 try:
     config.read(configPath)
-    configVer, authType, lang, country, bDumpImages, bDumpSingleResponses, bDumpProfiles, bDumpAcocuntInfo, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Country'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Images'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Single_Responses'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Info'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower()]
+    configVer, authType, lang, country, bDumpImages, bDumpSingleResponses, bDumpMOTDs, bDumpProfiles, bDumpAcocuntInfo, bDumpFriendlists, bDumpAccountCloudstorage, bDumpGlobalCloudstorage, bSaveEmptyCloudstorage, bDumpDiscovery, bCheckForUpdates = [config['Config_Version']['Version'], config['Fortnite_Response_Dumper_Config']['Authorization_Type'].lower(), config['Fortnite_Response_Dumper_Config']['Language'].lower(), config['Fortnite_Response_Dumper_Config']['Country'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Images'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Single_Responses'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_MOTDs'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Profiles'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Info'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Friendlists'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Account_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Global_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Save_Empty_Cloudstorage'].lower(), config['Fortnite_Response_Dumper_Config']['Dump_Discovery'].lower(), config['Fortnite_Response_Dumper_Config']['Check_For_Updates'].lower()]
 except:
     customError("The program is unable to read the config.ini file. Delete the config.ini file and run this program again to generate a new one.")
 checkValuesJson = {"Authorization_Type": {"value": authType, "validValues": ["token", "device"]}, "Language": {"value": lang, "validValues": langValues}, "Country": {"value": country, "validValues": countryValues}, "Dump_Images": {"value": bDumpImages, "validValues": boolValues}, "Dump_Single_Responses": {"value": bDumpSingleResponses, "validValues": boolValues}, "Dump_Profiles": {"value": bDumpProfiles, "validValues": boolValues}, "Dump_Account_Info": {"value": bDumpAcocuntInfo, "validValues": boolValues}, "Dump_Friendlists": {"value": bDumpFriendlists, "validValues": boolValues}, "Dump_Account_Cloudstorage": {"value": bDumpAccountCloudstorage, "validValues": boolValues}, "Dump_Global_Cloudstorage": {"value": bDumpGlobalCloudstorage, "validValues": boolValues}, "Save_Empty_Cloudstorage": {"value": bSaveEmptyCloudstorage, "validValues": boolValues}, "Dump_Discovery": {"value": bDumpDiscovery, "validValues": boolValues}}
 for option in checkValuesJson:
-    if not (checkValuesJson[option]['value'] in checkValuesJson[option]['validValues']): customError(f"You set the wrong {option} value in config.ini ({checkValuesJson[option]['value']}). Valid values: {', '.join(checkValuesJson[option]['validValues'])}. Please change it and run this program again.")
+    if not (checkValuesJson[option]['value'] in checkValuesJson[option]['validValues']): customError(f"You set the wrong {option} value in config.ini ({checkValuesJson[option]['value']}). Available options: {', '.join(checkValuesJson[option]['validValues'])}. Please change it and run this program again.")
 if not (configVer == f"FRD_{configVersion}"): customError("The config file is outdated. Delete the config.ini file and run this program again to generate a new one.")
 
 # Create and/or read the auth.json file.
@@ -238,16 +345,17 @@ def anyonesStWProfileDumper():
 
 # The main part of the program
 def main():
-    if bDumpSingleResponses == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
+    if bDumpSingleResponses == bDumpMOTDs == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 
     print("Starting the main program...\n")
     login()
 
     # Get and dump single responses.
     if bDumpSingleResponses == "true":
-        def download_image(link, responseName):
+        if bDumpImages == "true":
             imagesPath = os.path.join(vars.path, "images")
             if not os.path.exists(imagesPath): os.makedirs(imagesPath)
+        def download_image(link, responseName):
             image_data = session.get(link).content
             filename = os.path.basename(urlparse(link).path)
             image_path = os.path.join(imagesPath, filename)
@@ -280,12 +388,45 @@ def main():
             thread.start(); threads.append(thread)
         for thread in threads: thread.join()
 
+    # Get and dump the MOTDs.                                                                                                                             I wrote this piece of code at school on 31st May 2024 lol.
+    motdPath = os.path.join(vars.path, "MOTDs")
+    if not os.path.exists(motdPath): os.makedirs(motdPath)
+    if bDumpImages == "true":
+        motdImagesPath = os.path.join(motdPath, "images")
+        if not os.path.exists(motdImagesPath): os.makedirs(motdImagesPath)
+    gameModes = ["stw-motd", "sparks-motd", "delmar-motd", "br-motd", "juno-motd", "eco-motd"]
+    print(f"Starting to dump {len(gameModes)} MOTDs...\n")
+    def download_image(link, responseName):
+        image_data = session.get(link).content
+        filename = os.path.basename(urlparse(link).path)
+        image_path = os.path.join(motdImagesPath, filename)
+        with open(image_path, 'wb') as f: f.write(image_data)
+        print(f"Dumped {filename} from {responseName}.\n")
+    for gm in gameModes:
+        reqGetMotdText = session.post(links.motd.format(gm), headers=vars.headers, data="{}")
+        if reqGetMotdText.status_code != 200:
+            print(f"Skipping {gm} because it's empty or unavailable.\n")
+            continue
+        reqGetMotdText = json.loads(reqGetMotdText.text)
+        filePathToSave = os.path.join(motdPath, f"{gm}.json")
+        with open(filePathToSave, "w", encoding="utf-8") as fileToSave:
+            json.dump(reqGetMotdText, fileToSave, indent=2, ensure_ascii=False)
+        fileSize = roundSize(filePathToSave)
+        print(f"Dumped the {gm} ({fileSize} KB) to {filePathToSave}.\n")
+        if bDumpImages == "true":
+            image_links = re.findall(r'(https?:\/\/\S+\.(?:jpg|jpeg|png|gif))', str(reqGetMotdText))
+            anotherThreads = []
+            for link in image_links:
+                thread = threading.Thread(target=download_image, args=(link, gm))
+                thread.start(); anotherThreads.append(thread)
+            for thread in anotherThreads: thread.join()
+
     # Get and dump the profiles.
     if bDumpProfiles == "true":
         profilePath = os.path.join(vars.path, f"{vars.displayName}'s Profiles")
         if not os.path.exists(profilePath): os.makedirs(profilePath)
         profiles = ["athena", "campaign", "collection_book_people0", "collection_book_schematics0", "collections", "common_core", "common_public", "creative", "metadata", "outpost0", "profile0", "recycle_bin", "theater0", "theater1", "theater2"] # profile0 has to be after campaign, common_core, common_public and metadata since the program is going to recreate it using them.
-        print(f"Starting to dump {len(profiles)} {vars.displayName}'s profiles")
+        print(f"Starting to dump {len(profiles)} {vars.displayName}'s profiles...")
         dumpProfiles(profiles, ["campaign", "common_core", "common_public", "metadata"], profilePath, vars.accountId, "client", "QueryProfile")
         print(f"\n{vars.displayName}'s profiles have been successfully saved in {profilePath}.\n")
 
@@ -320,38 +461,42 @@ def main():
             fileSize = roundSize(friendslistFilePath)
             print(f"Dumped the {friendslist[1]} ({fileSize} KB)")
         friendAccountIds = ""
+        counter = 0 # The number of account id should be at least one and not more than 100.
         for friend in reqGetFriendslistText['friends']:
+            if counter >= 100: break
             if friendAccountIds != "": friendAccountIds += "&"
             friendAccountIds += f"accountId={friend['accountId']}"
-        reqGetFriendsInfoText = requestText(session.get(links.friendsinfo.format(friendAccountIds), headers=vars.headers, data="{}"), True)
-        friendsInfoFilePath = os.path.join(friendsPath, f"friendsinfo.json")
-        with open(friendsInfoFilePath, "w") as fileToSave: json.dump(reqGetFriendsInfoText, fileToSave, indent = 2)
-        fileSize = roundSize(friendsInfoFilePath)
-        print(f"Dumped the Friends Info ({fileSize} KB)\n\n{vars.displayName}'s Epic Friends responses have been successfully saved in {friendsPath}.\n")
+            counter += 1
+        if counter > 0:
+            reqGetFriendsInfoText = requestText(session.get(links.friendsinfo.format(friendAccountIds), headers=vars.headers, data="{}"), True)
+            friendsInfoFilePath = os.path.join(friendsPath, f"friendsinfo.json")
+            with open(friendsInfoFilePath, "w") as fileToSave: json.dump(reqGetFriendsInfoText, fileToSave, indent = 2)
+            fileSize = roundSize(friendsInfoFilePath)
+            print(f"Dumped the Friends Info ({fileSize} KB)\n\n{vars.displayName}'s Epic Friends responses have been successfully saved in {friendsPath}.\n")
 
-        # Get and dump the account Cloudstorage.
-        if bDumpAccountCloudstorage == "true":
-            def download_file(key):
-                semaphore.acquire()
-                try:
-                    reqGetCloudstorageFileText = session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}/{key['uniqueFilename']}"), headers=vars.headers, data="").content
-                    if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText): print(f"Skipping {key['filename']} because it's empty.")
-                    else:
-                        cloudstorageFilePath = os.path.join(userCSPath, f"{key['filename']}")
-                        with open(cloudstorageFilePath, "wb") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
-                        fileSize = roundSize(cloudstorageFilePath)
-                        print(f"Dumped {key['filename']} ({fileSize} KB)")
-                finally: semaphore.release()
-            userCSPath = os.path.join(vars.path, f"{vars.displayName}'s Cloudstorage")
-            if not os.path.exists(userCSPath): os.makedirs(userCSPath)
-            reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}"), headers=vars.headers, data="{}"), True)
-            print(f"Starting to dump {len(reqGetCloudstorageText)} {vars.displayName}'s Cloudstorage files")
-            threads = []
-            for key in reqGetCloudstorageText:
-                thread = threading.Thread(target=download_file, args=(key,))
-                thread.start(); threads.append(thread)
-            for thread in threads: thread.join()
-            print(f"\n{vars.displayName}'s Cloudstorage files have been successfully saved in {userCSPath}.\n")
+    # Get and dump the account Cloudstorage.
+    if bDumpAccountCloudstorage == "true":
+        def download_file(key):
+            semaphore.acquire()
+            try:
+                reqGetCloudstorageFileText = session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}/{key['uniqueFilename']}"), headers=vars.headers, data="").content
+                if (bSaveEmptyCloudstorage == "false") and (not reqGetCloudstorageFileText): print(f"Skipping {key['filename']} because it's empty.")
+                else:
+                    cloudstorageFilePath = os.path.join(userCSPath, f"{key['filename']}")
+                    with open(cloudstorageFilePath, "wb") as fileToSave: fileToSave.write(reqGetCloudstorageFileText)
+                    fileSize = roundSize(cloudstorageFilePath)
+                    print(f"Dumped {key['filename']} ({fileSize} KB)")
+            finally: semaphore.release()
+        userCSPath = os.path.join(vars.path, f"{vars.displayName}'s Cloudstorage")
+        if not os.path.exists(userCSPath): os.makedirs(userCSPath)
+        reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format(f"user/{vars.accountId}"), headers=vars.headers, data="{}"), True)
+        print(f"Starting to dump {len(reqGetCloudstorageText)} {vars.displayName}'s Cloudstorage files...")
+        threads = []
+        for key in reqGetCloudstorageText:
+            thread = threading.Thread(target=download_file, args=(key,))
+            thread.start(); threads.append(thread)
+        for thread in threads: thread.join()
+        print(f"\n{vars.displayName}'s Cloudstorage files have been successfully saved in {userCSPath}.\n")
 
     # Get and dump the global Cloudstorage.
     if bDumpGlobalCloudstorage == "true":
@@ -369,7 +514,7 @@ def main():
         globalCSPath = os.path.join(vars.path, "Global Cloudstorage")
         if not os.path.exists(globalCSPath): os.makedirs(globalCSPath)
         reqGetCloudstorageText = requestText(session.get(links.cloudstorageRequest.format("system"), headers=vars.headers, data="{}"), True)
-        print(f"Starting to dump {len(reqGetCloudstorageText)} global Cloudstorage files")
+        print(f"Starting to dump {len(reqGetCloudstorageText)} global Cloudstorage files...")
         threads = []
         for key in reqGetCloudstorageText:
             thread = threading.Thread(target=download_file, args=(key,))
@@ -377,11 +522,13 @@ def main():
         for thread in threads: thread.join()
         print(f"\nGlobal Cloudstorage files have been successfully saved in {globalCSPath}.\n")
 
-    # Get and dump the Discovery responses.
+    # Get and dump Discovery responses.
     if bDumpDiscovery == "true":
         discoveryPath, linksPath, imagesPath, testCohorts = [os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "surface"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "links"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "images"), []]
-        for path in [discoveryPath, linksPath, imagesPath]:
+        for path in [discoveryPath, linksPath]:
             if not os.path.exists(path): os.makedirs(path)
+        if bDumpImages == "true":
+            if not os.path.exists(imagesPath): os.makedirs(imagesPath)
         reqGetDiscoveryFrontend = requestText(session.post(links.discovery.format(vars.accountId), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","revision":-1,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
         discoveryFrontendFilePath = os.path.join(discoveryPath, "discovery_frontend.json")
         with open(discoveryFrontendFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryFrontend, fileToSave, indent = 2, ensure_ascii = False)
@@ -447,6 +594,8 @@ def main():
         print(f"Dumped Discovery - Library ({fileSize} KB)\n\n{vars.displayName}'s Discovery Tab responses have been successfully saved in {discoveryPath}.\n")
     
 # Start the program
+print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
+checkUpdate()
 while True:
     whatToDo = validInput("Main menu:\nType 1 if you want to start the main program and press ENTER.\nType 2 if you want to dump someone else's Save the World profiles and press ENTER.\nIf you want to stop the program leave the input blank and press ENTER.", ["1", "2", ""])
     if not whatToDo : break
