@@ -21,6 +21,11 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
+What's new in the 1.6.1 update:
+- Fixed the device login method not working.
+  - Included backwards compatibility with accounts saved prior to this update.
+- Tweaked the program's code a little bit.
+
 What's new in the 1.6.0 update:
 - Added the option to dump MOTDs for 6 game modes (stw, sparks, delmar, br, juno, eco).
   - You can toggle this feature in config.ini
