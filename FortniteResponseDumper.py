@@ -1,5 +1,5 @@
-versionNum = 25
-version = "1.6.1"
+versionNum = 26
+version = "1.6.2"
 configVersion = "1.6.0"
 
 try:
@@ -32,8 +32,8 @@ class links:
         ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]
     ]
     profileRequest = "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/profile/{0}/{1}/{2}?profileId={3}"
-    motd = "https://prm-dialogue-public-api-prod.edea.live.use1a.on.epicgames.com/api/v1/fortnite-br/surfaces/{0}/target"
-    discovery = "https://fn-service-discovery-live-public.ogs.live.on.epicgames.com/api/v1/discovery/surface/{0}?appId=Fortnite"
+    motd = "https://prm-dialogue-public-api-prod.edea.live.use1a.on.epicgames.com/api/v1/fortnite-br/channel/motd/target"
+    discovery = "https://fn-service-discovery-live-public.ogs.live.on.epicgames.com/api/v2/discovery/surface/CreativeDiscoverySurface_Frontend{0}?appId=Fortnite&stream=%2B%2BFortnite%2BRelease-37.00"
     linksDiscovery = "https://links-public-service-live.ol.epicgames.com/links/api/fn/mnemonic/{0}/related"
     accountInfo = [
         ["https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{0}", "Account Info #1", "accountInfo1"],
@@ -353,7 +353,7 @@ def anyonesStWProfileDumper():
 
 # The main part of the program
 def main():
-    if bDumpSingleResponses == bDumpMOTDs == bDumpProfiles == bDumpFriendlists == bDumpDiscovery == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
+    if bDumpSingleResponses == bDumpMOTDs == bDumpProfiles == bDumpAcocuntInfo == bDumpFriendlists == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == bDumpDiscovery == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
 
     print("Starting the main program...\n")
     login()
@@ -396,38 +396,39 @@ def main():
             thread.start(); threads.append(thread)
         for thread in threads: thread.join()
 
-    # Get and dump the MOTDs.                                                                                                                             I wrote this piece of code at school on 31st May 2024 lol.
-    motdPath = os.path.join(vars.path, "MOTDs")
-    if not os.path.exists(motdPath): os.makedirs(motdPath)
-    if bDumpImages == "true":
-        motdImagesPath = os.path.join(motdPath, "images")
-        if not os.path.exists(motdImagesPath): os.makedirs(motdImagesPath)
-    gameModes = ["stw-motd", "sparks-motd", "delmar-motd", "br-motd", "juno-motd", "eco-motd"]
-    print(f"Starting to dump {len(gameModes)} MOTDs...\n")
-    def download_image(link, responseName):
-        image_data = session.get(link).content
-        filename = os.path.basename(urlparse(link).path)
-        image_path = os.path.join(motdImagesPath, filename)
-        with open(image_path, 'wb') as f: f.write(image_data)
-        print(f"Dumped {filename} from {responseName}.\n")
-    for gm in gameModes:
-        reqGetMotdText = session.post(links.motd.format(gm), headers=vars.headers, data="{}")
-        if reqGetMotdText.status_code != 200:
-            print(f"Skipping {gm} because it's empty or unavailable.\n")
-            continue
-        reqGetMotdText = json.loads(reqGetMotdText.text)
-        filePathToSave = os.path.join(motdPath, f"{gm}.json")
-        with open(filePathToSave, "w", encoding="utf-8") as fileToSave:
-            json.dump(reqGetMotdText, fileToSave, indent=2, ensure_ascii=False)
-        fileSize = roundSize(filePathToSave)
-        print(f"Dumped the {gm} ({fileSize} KB) to {filePathToSave}.\n")
+    # Get and dump the MOTDs.                                                                                                                             I wrote this piece of code at school on May 31st 2024 lol.
+    if bDumpMOTDs == "true":
+        motdPath = os.path.join(vars.path, "MOTDs")
+        if not os.path.exists(motdPath): os.makedirs(motdPath)
         if bDumpImages == "true":
-            image_links = re.findall(r'(https?:\/\/\S+\.(?:jpg|jpeg|png|gif))', str(reqGetMotdText))
-            anotherThreads = []
-            for link in image_links:
-                thread = threading.Thread(target=download_image, args=(link, gm))
-                thread.start(); anotherThreads.append(thread)
-            for thread in anotherThreads: thread.join()
+            motdImagesPath = os.path.join(motdPath, "images")
+            if not os.path.exists(motdImagesPath): os.makedirs(motdImagesPath)
+        tags = ["Product.BR.Build", "Product.BR.Habanero.Build", "Product.BR.NoBuild", "Product.BR.Respawn", "Product.BlastBerry.Build", "Product.BlastBerry.Habanero", "Product.BlastBerry.NoBuild", "Product.DelMar", "Product.FNE.Hub", "Product.FNE.Unknown", "Product.Sparks.BattleStage", "Product.Sparks.Jam", "Product.Sparks.PilgrimQuickplay", "Product.Sprout", "Product.STW"]
+        print(f"Starting to dump {len(tags)} MOTDs...\n")
+        def download_image(link, responseName):
+            image_data = session.get(link).content
+            filename = os.path.basename(urlparse(link).path)
+            image_path = os.path.join(motdImagesPath, filename)
+            with open(image_path, 'wb') as f: f.write(image_data)
+            print(f"Dumped {filename} from {responseName} MOTD.\n")
+        for gm in tags:
+            reqGetMotdText = session.post(links.motd, headers=vars.headers, json={"parameters": {"language": lang}, "tags": [gm]})
+            if reqGetMotdText.status_code != 200:
+                print(f"Skipping {gm} MOTD because it's empty or unavailable.\n")
+                continue
+            reqGetMotdText = json.loads(reqGetMotdText.text)
+            filePathToSave = os.path.join(motdPath, f"{gm}.json")
+            with open(filePathToSave, "w", encoding="utf-8") as fileToSave:
+                json.dump(reqGetMotdText, fileToSave, indent=2, ensure_ascii=False)
+            fileSize = roundSize(filePathToSave)
+            print(f"Dumped the {gm} MOTD ({fileSize} KB) to {filePathToSave}.\n")
+            if bDumpImages == "true":
+                image_links = re.findall(r'(https?:\/\/\S+\.(?:jpg|jpeg|png|gif))', str(reqGetMotdText))
+                anotherThreads = []
+                for link in image_links:
+                    thread = threading.Thread(target=download_image, args=(link, gm))
+                    thread.start(); anotherThreads.append(thread)
+                for thread in anotherThreads: thread.join()
 
     # Get and dump the profiles.
     if bDumpProfiles == "true":
@@ -532,75 +533,55 @@ def main():
 
     # Get and dump Discovery responses.
     if bDumpDiscovery == "true":
-        discoveryPath, linksPath, imagesPath, testCohorts = [os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "surface"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "links"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "images"), []]
+        discoveryPath, linksPath, imagesPath = [os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "surface"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "links"), os.path.join(vars.path, f"{vars.displayName}'s Discovery Tab", "images")]
         for path in [discoveryPath, linksPath]:
             if not os.path.exists(path): os.makedirs(path)
         if bDumpImages == "true":
             if not os.path.exists(imagesPath): os.makedirs(imagesPath)
-        reqGetDiscoveryFrontend = requestText(session.post(links.discovery.format(vars.accountId), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","revision":-1,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
+        reqGetDiscoveryFrontend = requestText(session.post(links.discovery.format(""), headers=vars.headers, json={"playerId": vars.accountId, "partyMemberIds": [vars.accountId], "accountLevel": 2137, "battlepassLevel": 69, "locale": lang, "matchmakingRegion": "EU", "platform": "Windows", "isCabined": False, "ratingAuthority": "PEGI", "rating": "PEGI_AGE_12", "numLocalPlayers": 1, "pagePlayerId": ""}), True)
         discoveryFrontendFilePath = os.path.join(discoveryPath, "discovery_frontend.json")
         with open(discoveryFrontendFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryFrontend, fileToSave, indent = 2, ensure_ascii = False)
         fileSize = roundSize(discoveryFrontendFilePath)
         print(f"Dumped Discovery - Frontend ({fileSize} KB)")
-        try: testCohorts = reqGetDiscoveryFrontend['testCohorts'] # the TestCohorts have to be grabbed from the "Discovery - Surface Frontend" response
-        except: []
-        if testCohorts:
-            bKeepRunning = [True]
-            def download_file(panelName, pageIndex):
-                semaphore.acquire()
-                try:
-                    reqGetPanel = requestText(session.post(links.discovery.format(f'page/{vars.accountId}'), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Frontend","panelName":panelName,"pageIndex":pageIndex,"revision":-1,"testCohorts":testCohorts,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
-                    pageWord = f" (Page {pageIndex})"
-                    if ((reqGetPanel['hasMore'] == False) and (pageIndex == 1)): panelFilePath, pageWord = [os.path.join(discoveryPath, f"discovery_{panelName.replace(' ', '')}.json".lower()), ""]
-                    else:
-                        panelFilePath = os.path.join(discoveryPath, panelName)
-                        if not os.path.exists(panelFilePath): os.makedirs(panelFilePath)
-                        panelFilePath = os.path.join(panelFilePath, f"discovery_{panelName.replace(' ', '')}{pageIndex}.json".lower())
-                    if reqGetPanel['hasMore'] or (not reqGetPanel['hasMore'] and reqGetPanel['results']):
-                        with open(panelFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetPanel, fileToSave, indent = 2, ensure_ascii = False)
-                        fileSize = roundSize(panelFilePath)
-                        print(f"Dumped Discovery - {panelName}{pageWord} ({fileSize} KB)")
-                        def download_link(linkCode):
-                            reqGetLink = requestText(session.get(links.linksDiscovery.format(linkCode), headers=vars.headers), True)
-                            linksFilePath = os.path.join(linksPath, f"{linkCode.replace(' ', '')}.json".lower())
-                            with open(linksFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetLink, fileToSave, indent = 2, ensure_ascii = False)
+        for panel in reqGetDiscoveryFrontend["panels"]:
+            reqGetPanel = requestText(session.post(links.discovery.format("/page"), headers=vars.headers, json={"testVariantName": reqGetDiscoveryFrontend["testVariantName"], "panelName": panel["panelName"], "pageIndex": 1, "playerId": vars.accountId, "partyMemberIds": [vars.accountId], "matchmakingRegion": "EU", "platform": "Windows", "isCabined": False, "ratingAuthority": "PEGI", "rating": "PEGI_AGE_12", "pagePlayerId": ""}), True)
+            pageIndex, panelName = [1, panel["panelName"]]
+            pageWord = f" (Page {pageIndex})"
+            if ((reqGetPanel['hasMore'] == False) and (pageIndex == 1)): panelFilePath, pageWord = [os.path.join(discoveryPath, f"discovery_{panelName.replace(' ', '')}.json".lower()), ""]
+            else:
+                panelFilePath = os.path.join(discoveryPath, panelName)
+                if not os.path.exists(panelFilePath): os.makedirs(panelFilePath)
+                panelFilePath = os.path.join(panelFilePath, f"discovery_{panelName.replace(' ', '')}{pageIndex}.json".lower())
+            while reqGetPanel['hasMore'] or (not reqGetPanel['hasMore'] and reqGetPanel['results']):
+                with open(panelFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetPanel, fileToSave, indent = 2, ensure_ascii = False)
+                fileSize = roundSize(panelFilePath)
+                print(f"Dumped Discovery - {panelName}{pageWord} ({fileSize} KB)")
+                def download_link(linkCode):
+                    reqGetLink = requestText(session.get(links.linksDiscovery.format(linkCode), headers=vars.headers), True)
+                    linksFilePath = os.path.join(linksPath, f"{linkCode.replace(' ', '')}.json".lower())
+                    with open(linksFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetLink, fileToSave, indent = 2, ensure_ascii = False)
+                    fileSize = roundSize(linksFilePath)
+                    print(f"Dumped Discovery Link - {linkCode} ({fileSize} KB)")
+                    if bDumpImages == "true":
+                        try:
+                            imageUrl = reqGetLink["links"][linkCode]["metadata"]["image_url"]
+                            reqGetImage = session.get(imageUrl, headers=vars.headers)
+                            imagesFilePath = os.path.join(imagesPath, f"{linkCode.replace(' ', '')}.{reqGetImage.headers['Content-Type'].split('/')[-1]}".lower())
+                            with open(imagesFilePath, "wb") as fileToSave: fileToSave.write(reqGetImage.content)
                             fileSize = roundSize(linksFilePath)
-                            print(f"Dumped Discovery Link - {linkCode} ({fileSize} KB)")
-                            if bDumpImages == "true":
-                                try:
-                                    imageUrl = reqGetLink["links"][linkCode]["metadata"]["image_url"]
-                                    reqGetImage = session.get(imageUrl, headers=vars.headers)
-                                    imagesFilePath = os.path.join(imagesPath, f"{linkCode.replace(' ', '')}.{reqGetImage.headers['Content-Type'].split('/')[-1]}".lower())
-                                    with open(imagesFilePath, "wb") as fileToSave: fileToSave.write(reqGetImage.content)
-                                    fileSize = roundSize(linksFilePath)
-                                    print(f"Dumped Discovery Image - {linkCode} ({fileSize} KB)")
-                                except: []
-                        anotherThreads = []
-                        for i in reqGetPanel['results']:
-                            linkCode = i["linkCode"]
-                            thread = threading.Thread(target=download_link, args=(linkCode,))
-                            thread.start(); anotherThreads.append(thread)
-                        for thread in anotherThreads: thread.join()
-                finally: semaphore.release()        
-                bKeepRunning[0] = reqGetPanel['hasMore']
-            for panelName in reqGetDiscoveryFrontend['panels']:
-                bKeepRunning[0] = True
-                panelName, pageIndex = [panelName['panelName'], 0]
-                while bKeepRunning[0]:
-                    if pageIndex > 1:
-                        threads = []
-                        for i in range (0, 76):
-                            pageIndex += 1
-                            thread = threading.Thread(target=download_file, args=(panelName, pageIndex,))
-                            thread.start(); threads.append(thread)
-                        for thread in threads: thread.join()
-                    else: pageIndex += 1; download_file(panelName, pageIndex)
-        reqGetDiscoveryLibrary = requestText(session.post(links.discovery.format(vars.accountId), headers=vars.headers, json={"surfaceName":"CreativeDiscoverySurface_Library","revision":-1,"partyMemberIds":[vars.accountId],"matchmakingRegion":"EU"}), True)
-        discoveryLibraryFilePath = os.path.join(discoveryPath, "discovery_library.json")
-        with open(discoveryLibraryFilePath, "w", encoding = "utf-8") as fileToSave: json.dump(reqGetDiscoveryLibrary, fileToSave, indent = 2, ensure_ascii = False)
-        fileSize = roundSize(discoveryLibraryFilePath)
-        print(f"Dumped Discovery - Library ({fileSize} KB)\n\n{vars.displayName}'s Discovery Tab responses have been successfully saved in {discoveryPath}.\n")
-    
+                            print(f"Dumped Discovery Image - {linkCode} ({fileSize} KB)")
+                        except: []
+                anotherThreads = []
+                for i in reqGetPanel['results']:
+                    linkCode = i["linkCode"]
+                    thread = threading.Thread(target=download_link, args=(linkCode,))
+                    thread.start(); anotherThreads.append(thread)
+                for thread in anotherThreads: thread.join()
+                pageIndex += 1
+                reqGetPanel = requestText(session.post(links.discovery.format("/page"), headers=vars.headers, json={"testVariantName": reqGetDiscoveryFrontend["testVariantName"], "panelName": panel["panelName"], "pageIndex": pageIndex, "playerId": vars.accountId, "partyMemberIds": [vars.accountId], "matchmakingRegion": "EU", "platform": "Windows", "isCabined": False, "ratingAuthority": "PEGI", "rating": "PEGI_AGE_12", "pagePlayerId": ""}), True)
+                pageWord = f" (Page {pageIndex})"
+        print()
+
 # Start the program
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 checkUpdate()

@@ -7,11 +7,11 @@ This program allows you to dump many Fortnite responses.
 - Multiple account support with two login methods: refresh token and device auth.
 - The program is able to dump:
   - account and global cloudstorage,
-  - user profiles and other's Save the World profiles,
+  - user profiles and anyone's Save the World profiles,
   - account information,
   - BR stats & inventory,
   - user friendlists,
-  - catalog responses,
+  - catalog (item shop),
   - contentpages,
   - discovery tab responses,
   - keychain,
@@ -21,20 +21,11 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.6.1 update:
-- Fixed the device login method not working.
-  - Included backwards compatibility with accounts saved prior to this update.
+What's new in the 1.6.2 update:
+- MOTD is now being dumped correctly due to some changes on epic's side.
+- MOTD is no longer being dumped if it's disabled in the config.
+- Fixed the Discovery responses dumping not working.
 - Tweaked the program's code a little bit.
-
-What's new in the 1.6.0 update:
-- Added the option to dump MOTDs for 6 game modes (stw, sparks, delmar, br, juno, eco).
-  - You can toggle this feature in config.ini
-- Update checker at the start of the program (togglable via config)
-- Fixed a bug which caused the account Cloudstorage to dump only when Dump_Friendslist & Dump_Account_Cloudstorage were enabled at the same time, instead of doing so only when Dump_Account_Cloudstorage was enabled.
-- Fixed the program not dumping the friendlist when the account has more than 100 friends added ([Issue #8](https://github.com/PRO100KatYT/FortniteResponseDumper/issues/8)).
-- The program will no longer make a folder for Discovery images when the config option for dumping images is set to false.
-- Added a .gitignore file to the repository.
-- Tweaked the code a little bit (e.g. made the config part of the program a bit clearer to read).
 ---
 
 ### How to use it?
