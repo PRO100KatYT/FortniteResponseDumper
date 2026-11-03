@@ -28,6 +28,7 @@ class links:
         ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/catalog", "{}", "Catalog", "catalog"],
         ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2/keychain", "{}", "Keychain", "keychain"],
         ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game" , "", "Contentpages", "contentpages"],
+        ["https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game/spark-tracks" , "", "Sparktracks", "sparktracks"],
         ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/calendar/v1/timeline", "{}", "Timeline", "timeline"],
         ["https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/world/info", "{}", "Theater (StW World)", "worldstw"]
     ]
@@ -330,27 +331,6 @@ def dumpProfiles(profilesList, profile0ProfilesList, profilePath, headersFormat1
             fileSize = roundSize(profileFilePath)
             print(f"{profileCount}: Dumped the {profile} profile ({fileSize} KB)")
 
-# The Anyone's StW Profile Dumper part of the program.
-def anyonesStWProfileDumper():
-    # Get the account id using displayname.
-    nameInput = input("Insert the epic games display name of the account whose Save the World profiles you'd want the program to save:\n")
-    if not nameInput: print(f"You didn't input anything.\n"); return
-    print(); login()
-    reqGetAccountId = json.loads(session.get(links.getAccountIdByName.format(nameInput), headers=vars.headers, data="{}").text)
-    if "errorMessage" in reqGetAccountId:
-        print(f"ERROR: {reqGetAccountId['errorMessage']}. Please try again with a different username.\n"); return
-    accountId, displayName = [reqGetAccountId['id'], reqGetAccountId['displayName']]
-
-    publicProfilePath, publicProfilesList = [os.path.join(vars.path, f"{displayName}'s STW Profiles"), ["campaign", "common_public", "profile0"]]  # profile0 has to be after campaign and common_public since the program is going to recreate it using them.
-    if not os.path.exists(publicProfilePath): os.makedirs(publicProfilePath)
-
-    # Get and dump the profiles.
-    profilesWord, haveWord = ["profiles", "have"]
-    if len(publicProfilesList) == 1: profilesWord, haveWord = ["profile", "has"]
-    print(f"Dumping {len(publicProfilesList)} {displayName}'s Save the World {profilesWord}...\n")
-    dumpProfiles(publicProfilesList, ["campaign", "common_public"], publicProfilePath, accountId, "public", "QueryPublicProfile")
-    print(f"\n{displayName}'s Save the World {profilesWord} {haveWord} been successfully saved in {publicProfilePath}.\n")
-
 # The main part of the program
 def main():
     if bDumpSingleResponses == bDumpMOTDs == bDumpProfiles == bDumpAcocuntInfo == bDumpFriendlists == bDumpAccountCloudstorage == bDumpGlobalCloudstorage == bDumpDiscovery == "false": print(f"You set everything the program can save to false in the config. Why are we still here? Just to suffer?\n")
@@ -586,11 +566,10 @@ def main():
 print(f"Fortnite Response Dumper v{version} by PRO100KatYT\n")
 checkUpdate()
 while True:
-    whatToDo = validInput("Main menu:\nType 1 if you want to start the main program and press ENTER.\nType 2 if you want to dump someone else's Save the World profiles and press ENTER.\nIf you want to stop the program leave the input blank and press ENTER.", ["1", "2", ""])
+    whatToDo = validInput("Main menu:\nType 1 if you want to start the main program and press ENTER.\nIf you want to stop the program leave the input blank and press ENTER.", ["1", ""])
     if not whatToDo : break
     vars.path = os.path.join(os.path.split(os.path.abspath(__file__))[0], "Dumped files", datetime.today().strftime('%Y-%m-%d %H-%M-%S'))
     if not os.path.exists(vars.path): os.makedirs(vars.path)
     if whatToDo == "1": main()
-    elif whatToDo == "2": anyonesStWProfileDumper()
 
 exit()

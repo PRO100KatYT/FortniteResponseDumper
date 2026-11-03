@@ -7,7 +7,7 @@ This program allows you to dump many Fortnite responses.
 - Multiple account support with two login methods: refresh token and device auth.
 - The program is able to dump:
   - account and global cloudstorage,
-  - user profiles and anyone's Save the World profiles,
+  - user profiles,
   - account information,
   - BR stats & inventory,
   - user friendlists,
@@ -21,10 +21,10 @@ This program allows you to dump many Fortnite responses.
 - A config file where you can choose which responses to dump.
 ---
 ### Changelog:
-What's new in the 1.6.2 update:
-- MOTD is now being dumped correctly due to some changes on epic's side.
-- MOTD is no longer being dumped if it's disabled in the config.
-- Fixed the Discovery responses dumping not working.
+What's new in the 1.6.3 update:
+- Added seperate spark-tracks contentpages response dumping.
+- Removed the Anyone's Save the World profile dumper functionality:
+  - Epic Games disabled the QueryPublicProfile endpoint for campaign and common_public profiles in September 2026.
 - Tweaked the program's code a little bit.
 ---
 
